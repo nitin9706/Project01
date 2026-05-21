@@ -4,7 +4,7 @@ import { DB_NAME } from "../constant.js";
 const connectDB = async () => {
   try {
     const connectioninstance = await mongoose.connect(
-      `${process.env.DATABASE_URL}/${DB_NAME}`,
+      "mongodb://localhost:27017/deployify",
     );
     console.log(
       `the DataBase is running on ${connectioninstance.connection.host}`,

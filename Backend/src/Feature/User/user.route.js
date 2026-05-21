@@ -1,4 +1,5 @@
-import router from "express";
+import { Router } from "express";
+
 import {
   deleteUser,
   loginUser,
@@ -6,18 +7,19 @@ import {
   refreshAccessToken,
   registerUser,
 } from "./user.controller.js";
+
 import { verifyJWT } from "../../Middleware/Auth.middleware.js";
 
-const Router = router();
+const router = Router();
 
-Router.route("/registerUser").post(registerUser);
+router.route("/register").post(registerUser);
 
-Router.route("/loginUser").post(loginUser);
+router.route("/login").post(loginUser);
 
-Router.route("/logoutUser").post(logoutUser);
+router.route("/logout").post(verifyJWT, logoutUser);
 
-Router.route("/refreshAccessToken").post(verifyJWT, refreshAccessToken);
+router.route("/refreshAccessToken").post(refreshAccessToken);
 
-Router.route("/deleteUser").delete(verifyJWT, deleteUser);
+router.route("/delete").delete(verifyJWT, deleteUser);
 
-export default Router;
+export default router;

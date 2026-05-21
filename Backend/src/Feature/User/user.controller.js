@@ -4,7 +4,7 @@ import { ApiResponse } from "../../utility/ApiResponse.js";
 import { ApiError } from "../../utility/ApiError.js";
 import jwt from "jsonwebtoken";
 
-// makeing the access and refresh token for the user
+// making the access and refresh token for the user
 
 const generateAccessAndRefreshToken = async (userId) => {
   const user = await User.findById(userId);
@@ -29,29 +29,37 @@ const generateAccessAndRefreshToken = async (userId) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-  // getting the data from the user
-  const { name, email, password } = req.data;
+  const { name, email, password } = req.body;
 
-  const userExist = await User.findOne({ email: email });
-  if (userExist) return res.json(new ApiError(500, ` The User already Exist `));
+  if (!name || !email || !password) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  const userExist = await User.findOne({ email });
+
+  if (userExist) {
+    throw new ApiError(409, "User already exists");
+  }
 
   const user = await User.create({
-    name: name,
-    email: email,
-    password: password,
+    name,
+    email,
+    password,
   });
 
   const userCreated = await User.findById(user._id).select("-password");
 
   if (!userCreated) {
-    res.json(new ApiError(500, ` Error While creating the user in db `));
+    throw new ApiError(500, "Error while creating user");
   }
 
-  res.json(new ApiResponse(201, userCreated, "User Created Successfully"));
+  return res
+    .status(201)
+    .json(new ApiResponse(201, userCreated, "User created successfully"));
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.data;
+  const { email, password } = req.body;
 
   const user = await User.findOne({ email: email });
 
