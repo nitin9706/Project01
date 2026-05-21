@@ -1,1 +1,1 @@
-export const DB_NAME = "Deployer";
+export const DB_NAME = "Deployify";

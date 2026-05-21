@@ -1,5 +1,5 @@
 import Router from "express";
-import verifyJWT from "../../Middleware/Auth.middleware.js";
+import { verifyJWT } from "../../Middleware/Auth.middleware.js";
 import {
   createProject,
   deleteProject,

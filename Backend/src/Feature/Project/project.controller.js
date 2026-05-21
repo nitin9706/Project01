@@ -1,10 +1,10 @@
-import asyncHandler from "../../utility/asyncHandler.js";
+import { asyncHandler } from "../../utility/asyncHandler.js";
 import { Project } from "./project.model.js";
 import { ApiError } from "../../utility/ApiError.js";
 import { ApiResponse } from "../../utility/ApiResponse.js";
 
 // create project
-export const createProject = asyncHandler(async (req, res) => {
+const createProject = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const {
     name,

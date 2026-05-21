@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-import { DB_NAME } from "../constant";
+import { DB_NAME } from "../constant.js";
 
 const connectDB = async () => {
   try {
     const connectioninstance = await mongoose.connect(
-      process.env.DATABASE_URL / DB_NAME,
+      `${process.env.DATABASE_URL}/${DB_NAME}`,
     );
     console.log(
       `the DataBase is running on ${connectioninstance.connection.host}`,
