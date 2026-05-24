@@ -8,10 +8,10 @@ app.use(cookieParser());
 app.use(express.static("public"));
 
 //  importing the routes to the app
-
-import userRoute from "./Feature/User/user.route.js";
+import userRoute from "./routes/user.route.js";
 import projectRoute from "./routes/project.route.js";
-import cloningRoute from "./Feature/Cloning Project/Cloning.route.js";
+import cloningRoute from "./routes/cloning.route.js";
+
 // Routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/project", projectRoute);

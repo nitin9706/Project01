@@ -1,6 +1,6 @@
 import Router from "express";
-import { verifyJWT } from "../../Middleware/Auth.middleware.js";
-import { cloneProject } from "./Cloning.controller.js";
+import { verifyJWT } from "../Middleware/Auth.middleware.js";
+import { cloneProject } from "../controllers/Cloning.controller.js";
 const router = Router();
 
 router.use(verifyJWT);

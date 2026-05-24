@@ -2,9 +2,9 @@ import { asyncHandler } from "../utility/asyncHandler.js";
 import { ApiResponse } from "../utility/ApiResponse.js";
 import { ApiError } from "../utility/ApiError.js";
 
-import { cloneRepo } from "../Feature/Cloning Project/Cloning.service.js";
-import { getAllFiles } from "../Feature/Cloning Project/FileArrMaker.js";
-import { uploadToS3 } from "../Feature/Cloning Project/UploadingToS3.js";
+import { cloneRepo } from "../service/Cloning.service.js";
+import { getAllFiles } from "../utility/FileArrMaker.js";
+import { uploadToS3 } from "../utility/UploadingToS3.js";
 
 import fs from "fs";
 import pathModule from "path";

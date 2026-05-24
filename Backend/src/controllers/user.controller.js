@@ -1,5 +1,5 @@
 import { asyncHandler } from "../utility/asyncHandler.js";
-import { User } from "../Feature/User/user.model.js";
+import { User } from "../models/user.model.js";
 import { ApiResponse } from "../utility/ApiResponse.js";
 import { ApiError } from "../utility/ApiError.js";
 import jwt from "jsonwebtoken";
@@ -64,13 +64,13 @@ const loginUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email: email });
 
   if (!user) {
-    return res.json(new ApiError(404, ` User Not Found with this email `));
+    throw new ApiError(404, ` User Not Found with this email `);
   }
 
   const isPasswordMatch = await user.isPasswordCorrect(password);
 
   if (!isPasswordMatch) {
-    return res.json(new ApiError(401, ` Invalid Password `));
+    throw new ApiError(401, ` Invalid Password `);
   }
   const userData = await User.findById(user._id).select(
     "-password -refreshToken",
@@ -118,12 +118,12 @@ const logoutUser = asyncHandler(async (req, res) => {
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) {
-    return res.json(new ApiError(401, ` No Refresh Token Provided `));
+    throw new ApiError(401, ` No Refresh Token Provided `);
   }
 
   const user = await User.findOne({ refreshToken: refreshToken });
   if (!user) {
-    return res.json(new ApiError(401, ` Invalid Refresh Token `));
+    throw new ApiError(401, ` Invalid Refresh Token `);
   }
 
   const options = {
@@ -146,7 +146,7 @@ const deleteUser = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const user = await User.findById(userId);
   if (!user) {
-    return res.json(new ApiError(404, ` User Not Found `));
+    throw new ApiError(404, ` User Not Found `);
   }
   await User.findByIdAndDelete(userId);
   const options = {
