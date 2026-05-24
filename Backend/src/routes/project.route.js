@@ -1,12 +1,12 @@
 import Router from "express";
-import { verifyJWT } from "../../Middleware/Auth.middleware.js";
+import { verifyJWT } from "../Middleware/Auth.middleware.js";
 import {
   createProject,
   deleteProject,
   getAllProjects,
   getProjectById,
   updateProject,
-} from "./project.controller.js";
+} from "../controllers/project.controller.js";
 
 const router = Router();
 

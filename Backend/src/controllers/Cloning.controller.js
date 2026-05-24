@@ -1,10 +1,10 @@
-import { asyncHandler } from "../../utility/asyncHandler.js";
-import { ApiResponse } from "../../utility/apiResponse.js";
-import { ApiError } from "../../utility/apiError.js";
+import { asyncHandler } from "../utility/asyncHandler.js";
+import { ApiResponse } from "../utility/ApiResponse.js";
+import { ApiError } from "../utility/ApiError.js";
 
-import { cloneRepo } from "./Cloning.service.js";
-import { getAllFiles } from "./FileArrMaker.js";
-import { uploadToS3 } from "./UploadingToS3.js";
+import { cloneRepo } from "../Feature/Cloning Project/Cloning.service.js";
+import { getAllFiles } from "../Feature/Cloning Project/FileArrMaker.js";
+import { uploadToS3 } from "../Feature/Cloning Project/UploadingToS3.js";
 
 import fs from "fs";
 import pathModule from "path";

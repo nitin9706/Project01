@@ -10,7 +10,7 @@ app.use(express.static("public"));
 //  importing the routes to the app
 
 import userRoute from "./Feature/User/user.route.js";
-import projectRoute from "./Feature/Project/project.route.js";
+import projectRoute from "./routes/project.route.js";
 import cloningRoute from "./Feature/Cloning Project/Cloning.route.js";
 // Routes
 app.use("/api/v1/user", userRoute);

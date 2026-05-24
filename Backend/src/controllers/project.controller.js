@@ -1,7 +1,7 @@
-import { asyncHandler } from "../../utility/asyncHandler.js";
-import { Project } from "./project.model.js";
-import { ApiError } from "../../utility/ApiError.js";
-import { ApiResponse } from "../../utility/ApiResponse.js";
+import { asyncHandler } from "../utility/asyncHandler.js";
+import { Project } from "../models/project.model.js";
+import { ApiError } from "../utility/ApiError.js";
+import { ApiResponse } from "../utility/ApiResponse.js";
 
 // create project
 const createProject = asyncHandler(async (req, res) => {
