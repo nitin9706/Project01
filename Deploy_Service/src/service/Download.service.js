@@ -1,6 +1,6 @@
-// we will download the zipped file from the s3 bucket
-
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { pipeline } from "stream/promises";
+import fs from "fs";
 
 const client = new S3Client({
   region: process.env.AWS_REGION,
@@ -12,20 +12,25 @@ const client = new S3Client({
 
 export const getZipFromS3 = async (zipFileKey) => {
   try {
-    // getting the file from the s3 bucket
-
-    const getFileCommand = new GetObjectCommand({
+    const command = new GetObjectCommand({
       Bucket: process.env.AWS_S3_BUCKET_NAME,
       Key: zipFileKey,
     });
-    const getFile = await client.send(getFileCommand);
-    if (!getFile.Body) {
+
+    const response = await client.send(command);
+
+    if (!response.Body) {
       throw new Error("File not found in S3 bucket");
     }
 
-    return getFile.Body;
+    const fileName = zipFileKey.split("/").pop();
+    const filePath = `./Output/${fileName}`;
+
+    await pipeline(response.Body, fs.createWriteStream(filePath));
+
+    return filePath;
   } catch (error) {
-    console.error("Error fetching zip file:", error);
+    console.error("Error downloading zip file from S3:", error);
     throw error;
   }
 };
