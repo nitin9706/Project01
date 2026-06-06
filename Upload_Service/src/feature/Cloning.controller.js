@@ -1,5 +1,4 @@
 import fs from "fs/promises";
-import path from "path";
 
 import { asyncHandler } from "../utility/asyncHandler.js";
 import { ApiResponse } from "../utility/ApiResponse.js";
@@ -11,6 +10,7 @@ import {
   checkS3FileExists,
   deleteFromS3,
 } from "../utility/UploadingToS3.js";
+import { triggerDeployment } from "../service/redis.service.js";
 
 const cloneProject = asyncHandler(async (req, res) => {
   const { repoUrl } = req.body;
@@ -23,12 +23,12 @@ const cloneProject = asyncHandler(async (req, res) => {
   let zipPath = null;
   try {
     // clone repo
-    const { path: clonedPath, id } = await cloneRepo(repoUrl);
+    const { cloneRepoPath, id } = await cloneRepo(repoUrl);
 
-    repoPath = clonedPath;
+    repoPath = cloneRepoPath;
 
     // create archive
-    zipPath = await zipFolder(clonedPath, `./Output/${id}.zip`);
+    zipPath = await zipFolder(cloneRepoPath, `./Output/${id}.zip`);
 
     console.log(zipPath);
 
@@ -38,8 +38,16 @@ const cloneProject = asyncHandler(async (req, res) => {
     // upload archive
     const s3Url = await uploadToS3(zipPath, s3Key);
 
+    if (!s3Url) {
+      throw new ApiError(400, "file not uploaded to S3");
+    }
+
+    //  now we will push the cloneing status to the queue
+
+    await triggerDeployment(id, zipPath);
+
     return res.status(200).json(
-      new ApiResponse(200, "Repository uploaded successfully", {
+      new ApiResponse(200, "Repository uploaded successfully  and queued", {
         success: true,
 
         id,

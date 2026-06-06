@@ -1,0 +1,50 @@
+services:
+  upload_service:
+    build:
+      context: ./Upload_Service
+    container_name: upload_service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./Upload_Service/.env
+    depends_on:
+      - redis
+
+  deployment_service:
+    build:
+      context: ./Deploy_Service
+    container_name: deployment_service
+    restart: unless-stopped
+    command: node src/worker/deployment.worker.js
+    env_file:
+      - ./Deploy_Service/.env
+    depends_on:
+      - redis
+    volumes:
+      - deployments:/var/www/deployments
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - upload_service
+    volumes:
+      - deployments:/usr/share/nginx/html:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+volumes:
+  redis_data:
+  deployments:

@@ -2,22 +2,25 @@
 
 import simpleGit from "simple-git";
 import fs from "fs";
+import path from "path";
 
 const cloneRepo = async (repoUrl) => {
   // we will use simple git to clone the repo
   const git = simpleGit();
   const id = randomIdGenerator();
-  const path = `C:\\Users\\nitin\\Desktop\\Project Idea\\Backend\\Output\\${id}`; // you can change this path to where you want to save the cloned repo
+  const cloneRepoPath = path.join(
+    path.join(process.cwd(), "Upload_Service", "Output", `${id}`),
+  ); // you can change this path to where you want to save the cloned repo
 
   try {
-    await git.clone(repoUrl, path);
+    await git.clone(repoUrl, cloneRepoPath);
 
     console.log("Repository cloned successfully");
   } catch (error) {
     console.error("Error cloning repository:", error);
   }
 
-  return { path, id }; // we will return the path and ID where the repo is cloned so that we can use it later to run the tests,
+  return { cloneRepoPath, id }; // we will return the path and ID where the repo is cloned so that we can use it later to run the tests,
 };
 
 export { cloneRepo };
