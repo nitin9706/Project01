@@ -20,6 +20,7 @@
     "express": "^5.2.1",
     "ioredis": "^5.11.1",
     "mime-types": "^3.0.2",
+    "mongoose": "^9.6.3",
     "simple-git": "^3.36.0"
   }
 }

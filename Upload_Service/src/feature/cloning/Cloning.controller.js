@@ -1,16 +1,17 @@
 import fs from "fs/promises";
 
-import { asyncHandler } from "../utility/asyncHandler.js";
-import { ApiResponse } from "../utility/ApiResponse.js";
-import { ApiError } from "../utility/ApiError.js";
-import { cloneRepo } from "../service/Cloning.service.js";
-import { zipFolder } from "../service/archive.service.js";
+import { asyncHandler } from "../../utility/asyncHandler.js";
+import { ApiResponse } from "../../utility/ApiResponse.js";
+import { ApiError } from "../../utility/ApiError.js";
+import { cloneRepo } from "../../service/Cloning.service.js";
+import { zipFolder } from "../../service/archive.service.js";
 import {
   uploadToS3,
   checkS3FileExists,
   deleteFromS3,
-} from "../utility/UploadingToS3.js";
-import { triggerDeployment } from "../service/redis.service.js";
+} from "../../utility/UploadingToS3.js";
+import { triggerDeployment } from "../../service/redis.service.js";
+import { Deployment } from "../deploment/deployment.model.js";
 
 const cloneProject = asyncHandler(async (req, res) => {
   const { repoUrl } = req.body;
