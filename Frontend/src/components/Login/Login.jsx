@@ -2,9 +2,34 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-950 text-white px-4">
       <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-xl">
+        <div className="mb-5">
+          {/* Left */}
+          <div className="flex items-center gap-10">
+            {/* Logo */}
+            <div className="flex items-center gap-3">
+              <div
+                style={{
+                  background: "var(--gradient-primary)",
+                }}
+                className="flex h-11 w-11 items-center justify-center rounded-2xl text-lg font-bold text-(--text-white)"
+              >
+                D
+              </div>
+
+              <div className="leading-tight">
+                <h1 className="text-lg font-semibold tracking-wide">
+                  Deployify
+                </h1>
+
+                <p className="text-xs text-(--text-secondary)">
+                  Deployment Platform
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
         <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
         <p className="text-zinc-400 mb-6">Login to your deployment platform</p>
-
         <form className="space-y-4">
           <input
             type="email"
