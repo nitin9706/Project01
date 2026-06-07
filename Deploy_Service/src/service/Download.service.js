@@ -1,6 +1,7 @@
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { pipeline } from "stream/promises";
 import fs from "fs";
+import path from "path";
 
 const client = new S3Client({
   region: process.env.AWS_REGION,
@@ -9,6 +10,8 @@ const client = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
 });
+
+const OutputDir = path.resolve("Output");
 
 export const getZipFromS3 = async (zipFileKey) => {
   try {
@@ -23,8 +26,12 @@ export const getZipFromS3 = async (zipFileKey) => {
       throw new Error("File not found in S3 bucket");
     }
 
+    if (!fs.existsSync(OutputDir)) {
+      fs.mkdirSync(OutputDir, { recursive: true });
+    }
+
     const fileName = zipFileKey.split("/").pop();
-    const filePath = `./Output/${fileName}`;
+    const filePath = path.join(OutputDir, fileName);
 
     await pipeline(response.Body, fs.createWriteStream(filePath));
 
@@ -34,3 +41,4 @@ export const getZipFromS3 = async (zipFileKey) => {
     throw error;
   }
 };
+``;

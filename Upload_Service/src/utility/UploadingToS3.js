@@ -31,8 +31,10 @@ const uploadToS3 = async (zipPath, key) => {
       client: s3Client,
       params: uploadParams,
     });
-    await parallelUploads3.done();
+    const result = await parallelUploads3.done();
     console.log(`File uploaded successfully to S3: ${key}`);
+
+    return result;
   } catch (err) {
     console.error("Error uploading file to S3:", err);
     throw err;

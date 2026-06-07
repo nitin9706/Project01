@@ -39,22 +39,22 @@ const cloneProject = asyncHandler(async (req, res) => {
     const s3Url = await uploadToS3(zipPath, s3Key);
 
     if (!s3Url) {
-      throw new ApiError(400, "file not uploaded to S3");
+      throw new ApiError(400, `file not uploaded to s3 ${s3Url} , ${s3Key}`);
     }
 
     //  now we will push the cloneing status to the queue
 
-    await triggerDeployment(id, zipPath);
+    await triggerDeployment(id, s3Key);
 
-    return res.status(200).json(
-      new ApiResponse(200, "Repository uploaded successfully  and queued", {
-        success: true,
+    // return res.status(200).json(
+    //   new ApiResponse(200, "Repository uploaded successfully  and queued", {
+    //     success: true,
 
-        id,
+    //     id,
 
-        archiveUrl: s3Url,
-      }),
-    );
+    //     archiveUrl: s3Url,
+    //   }),
+    // );
   } catch (error) {
     console.error(error);
 

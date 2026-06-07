@@ -8,11 +8,7 @@ const execute = util.promisify(exec);
 
 const BUILD_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 
-export const deployProject = async ({ projectDir, deploymentId }) => {
-  if (!/^[a-zA-Z0-9-_]+$/.test(deploymentId)) {
-    throw new Error("Invalid deployment ID");
-  }
-
+export const deployProject = async (projectDir, deploymentId) => {
   const deployRoot = "/var/www/deployments";
 
   const tempDeployPath = path.join(deployRoot, `${deploymentId}-tmp`);
@@ -104,7 +100,7 @@ export const deployProject = async ({ projectDir, deploymentId }) => {
     return {
       success: true,
       deploymentId,
-      url: `https://your-domain.com/${deploymentId}/`,
+      url: `${process.env.DEPLOYMENT_BASE_URL}/${deploymentId}/`,
       deployedAt: new Date().toISOString(),
     };
   } catch (error) {

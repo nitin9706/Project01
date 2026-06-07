@@ -16,7 +16,7 @@ services:
       context: ./Deploy_Service
     container_name: deployment_service
     restart: unless-stopped
-    command: node src/worker/deployment.worker.js
+    command: node src/index.js
     env_file:
       - ./Deploy_Service/.env
     depends_on:
