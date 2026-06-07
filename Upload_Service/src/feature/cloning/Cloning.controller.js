@@ -49,7 +49,6 @@ const cloneProject = asyncHandler(async (req, res) => {
       deploymentId: id,
       projectName: projectName || "",
       status: "queued",
-      buildLogs: ["Cloned Repo From Github"],
     });
 
     const deploymentDoc = await Deployment.findById(deploymentEntry._id);

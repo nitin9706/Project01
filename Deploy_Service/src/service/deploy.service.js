@@ -4,6 +4,8 @@ import fs from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
 
+import { Deployment } from "../deployment/deployment.model.js";
+
 const execute = util.promisify(exec);
 
 const BUILD_TIMEOUT = 5 * 60 * 1000; // 5 minutes
@@ -46,6 +48,12 @@ export const deployProject = async (
       cwd: projectDir,
       timeout: BUILD_TIMEOUT,
       maxBuffer: 10 * 1024 * 1024,
+    });
+
+    // modifiying the db entry from queue to building
+
+    await Deployment.findByIdAndUpdate(deploymentDoc._id, {
+      status: "Building",
     });
 
     console.log(`[${deploymentId}] Building project`);
@@ -100,6 +108,10 @@ export const deployProject = async (
     });
 
     console.log(`[${deploymentId}] Deployment successful`);
+
+    await Deployment.findByIdAndUpdate(deploymentDoc._id, {
+      status: "success",
+    });
 
     return {
       success: true,

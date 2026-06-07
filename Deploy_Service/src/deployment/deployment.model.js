@@ -15,7 +15,7 @@ const deploymentSchema = new Schema(
 
     status: {
       type: String,
-      enum: ["queued", "building", "deploying", "success", "failed"],
+      enum: ["queued", "building", "success", "failed"],
       default: "queued",
     },
 
