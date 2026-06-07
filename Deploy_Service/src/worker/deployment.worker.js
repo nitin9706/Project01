@@ -11,7 +11,7 @@ export async function startWorker() {
 
     const [, payload] = result;
 
-    const { deploymentId, zipFileKey } = JSON.parse(payload);
+    const { deploymentId, zipFileKey, deploymentDoc } = JSON.parse(payload);
 
     console.log(
       ` data from payload is zipfilekey = ,${zipFileKey} , deploymentid= ${deploymentId}`,
@@ -19,7 +19,7 @@ export async function startWorker() {
 
     try {
       console.log("deployment function envoked");
-      await processDeployment(deploymentId, zipFileKey);
+      await processDeployment(deploymentId, zipFileKey, deploymentDoc);
 
       console.log(`Deployment ${zipFileKey} completed`);
     } catch (error) {

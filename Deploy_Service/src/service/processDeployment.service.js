@@ -5,7 +5,11 @@ import { deployProject } from "./deploy.service.js";
 import fs from "fs";
 import path from "path";
 
-export const processDeployment = async (deploymentId, zipFileKey) => {
+export const processDeployment = async (
+  deploymentId,
+  zipFileKey,
+  deploymentDoc,
+) => {
   console.log(`getting the file from s3 started ${deploymentId}`);
 
   const zipFilePath = await getZipFromS3(zipFileKey);
@@ -25,5 +29,5 @@ export const processDeployment = async (deploymentId, zipFileKey) => {
     );
   }
 
-  return await deployProject(extractedPath, deploymentId);
+  return await deployProject(extractedPath, deploymentId, deploymentDoc);
 };

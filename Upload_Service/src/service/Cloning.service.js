@@ -12,6 +12,8 @@ const cloneRepo = async (repoUrl) => {
     path.join(process.cwd(), "Upload_Service", "Output", `${id}`),
   ); // you can change this path to where you want to save the cloned repo
 
+  const projectName = repoUrl.split("/").pop().split(".")[0];
+
   try {
     await git.clone(repoUrl, cloneRepoPath);
 
@@ -20,7 +22,7 @@ const cloneRepo = async (repoUrl) => {
     console.error("Error cloning repository:", error);
   }
 
-  return { cloneRepoPath, id }; // we will return the path and ID where the repo is cloned so that we can use it later to run the tests,
+  return { cloneRepoPath, id, projectName }; // we will return the path and ID where the repo is cloned so that we can use it later to run the tests,
 };
 
 export { cloneRepo };

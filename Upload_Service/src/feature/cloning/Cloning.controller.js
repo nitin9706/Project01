@@ -11,7 +11,7 @@ import {
   deleteFromS3,
 } from "../../utility/UploadingToS3.js";
 import { triggerDeployment } from "../../service/redis.service.js";
-import { Deployment } from "../deploment/deployment.model.js";
+import { Deployment } from "../deployment/deployment.model.js";
 
 const cloneProject = asyncHandler(async (req, res) => {
   const { repoUrl } = req.body;
@@ -24,7 +24,7 @@ const cloneProject = asyncHandler(async (req, res) => {
   let zipPath = null;
   try {
     // clone repo
-    const { cloneRepoPath, id } = await cloneRepo(repoUrl);
+    const { cloneRepoPath, id, projectName } = await cloneRepo(repoUrl);
 
     repoPath = cloneRepoPath;
 
@@ -43,9 +43,24 @@ const cloneProject = asyncHandler(async (req, res) => {
       throw new ApiError(400, `file not uploaded to s3 ${s3Url} , ${s3Key}`);
     }
 
+    // creating the database entry when the zip uploaded to the s3
+
+    const deploymentEntry = await Deployment.create({
+      deploymentId: id,
+      projectName: projectName || "",
+      status: "queued",
+      buildLogs: ["Cloned Repo From Github"],
+    });
+
+    const deploymentDoc = await Deployment.findById(deploymentEntry._id);
+
+    if (!deploymentDoc) {
+      throw new ApiError(500, "DB Entry failed");
+    }
+
     //  now we will push the cloneing status to the queue
 
-    await triggerDeployment(id, s3Key);
+    await triggerDeployment(id, s3Key, deploymentDoc);
 
     // return res.status(200).json(
     //   new ApiResponse(200, "Repository uploaded successfully  and queued", {

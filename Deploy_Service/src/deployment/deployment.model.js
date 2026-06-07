@@ -13,11 +13,6 @@ const deploymentSchema = new Schema(
       required: true,
     },
 
-    zipFileKey: {
-      type: String,
-      required: true,
-    },
-
     status: {
       type: String,
       enum: ["queued", "building", "deploying", "success", "failed"],

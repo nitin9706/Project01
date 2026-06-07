@@ -8,7 +8,11 @@ const execute = util.promisify(exec);
 
 const BUILD_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 
-export const deployProject = async (projectDir, deploymentId) => {
+export const deployProject = async (
+  projectDir,
+  deploymentId,
+  deploymentDoc,
+) => {
   const deployRoot = "/var/www/deployments";
 
   const tempDeployPath = path.join(deployRoot, `${deploymentId}-tmp`);
@@ -100,6 +104,7 @@ export const deployProject = async (projectDir, deploymentId) => {
     return {
       success: true,
       deploymentId,
+      deploymentDoc,
       url: `${process.env.DEPLOYMENT_BASE_URL}/${deploymentId}/`,
       deployedAt: new Date().toISOString(),
     };

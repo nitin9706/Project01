@@ -1,18 +1,18 @@
-import express from "express";
 import dotenv from "dotenv";
 dotenv.config({
   path: "./env",
 });
 
 import { startWorker } from "./worker/deployment.worker.js";
+import { connectDB } from "./database/db.js";
 
-const app = express();
-
-app.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "ok",
+connectDB()
+  .then(() => {
+    console.log(`DEPLOY_SERVICE IS CONNECTED TO THE DATABASE`);
+  })
+  .catch((err) => {
+    console.log(`DATABASE CONNECTION FAILED IN DEPLOY_SERVICE ${err}`);
   });
-});
 
 console.log("Starting worker...");
 await startWorker();
