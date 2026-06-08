@@ -17,6 +17,16 @@ export const registerUser = async (data) => {
   return await axiosClient.post("/user/register", data);
 };
 
+// refresh User Token
+export const refreshAccessToken = async () => {
+  return await axiosClient.post("/user/refreshAccessToken");
+};
+
+// delete User
+export const deleteUser = async () => {
+  return await axiosClient.delete("/user/delete");
+};
+
 // deployements
 // creating deployment
 export const createDeployment = async (data) => {
