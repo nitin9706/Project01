@@ -3,9 +3,19 @@ import axiosClient from "./apiFetcher.js";
 // getting the data for every situation
 
 // Login
+export const loginUser = async (data) => {
+  return await axiosClient.post("/user/login", data);
+};
+
+// logout
+export const logoutUser = async (data) => {
+  return await axiosClient.post("/user/logout", data);
+};
 
 // Register
-
+export const registerUser = async (data) => {
+  return await axiosClient.post("/user/register", data);
+};
 
 // deployements
 // creating deployment
