@@ -5,12 +5,17 @@ export const redis = new Redis({
   port: process.env.REDIS_PORT,
 });
 
-export const triggerDeployment = async (deploymentId, zipFileKey) => {
+export const triggerDeployment = async (
+  deploymentId,
+  zipFileKey,
+  deploymentEntry,
+) => {
   await redis.lpush(
     "deployments",
     JSON.stringify({
       deploymentId,
       zipFileKey,
+      deploymentEntry,
     }),
   );
 

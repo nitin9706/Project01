@@ -8,7 +8,7 @@ import path from "path";
 export const processDeployment = async (
   deploymentId,
   zipFileKey,
-  deploymentDoc,
+  deploymentEntry,
 ) => {
   console.log(`getting the file from s3 started ${deploymentId}`);
 
@@ -29,5 +29,5 @@ export const processDeployment = async (
     );
   }
 
-  return await deployProject(extractedPath, deploymentId, deploymentDoc);
+  return await deployProject(extractedPath, deploymentId, deploymentEntry);
 };

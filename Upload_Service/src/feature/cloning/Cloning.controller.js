@@ -59,17 +59,18 @@ const cloneProject = asyncHandler(async (req, res) => {
 
     //  now we will push the cloneing status to the queue
 
-    await triggerDeployment(id, s3Key, deploymentDoc);
+    await triggerDeployment(id, s3Key, deploymentEntry);
 
-    // return res.status(200).json(
-    //   new ApiResponse(200, "Repository uploaded successfully  and queued", {
-    //     success: true,
+    return res.status(200).json(
+      new ApiResponse(200, "Repository uploaded successfully  and queued", {
+        success: true,
 
-    //     id,
+        id,
 
-    //     archiveUrl: s3Url,
-    //   }),
-    // );
+        archiveUrl: s3Url,
+        deploymentDoc,
+      }),
+    );
   } catch (error) {
     console.error(error);
 
