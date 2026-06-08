@@ -8,7 +8,7 @@ import {
   registerUser,
 } from "../controllers/user.controller.js";
 
-import { verifyJWT } from "../Middleware/Auth.middleware.js";
+import { verifyJWT } from "../../../../Backend/src/Middleware/Auth.middleware.js";
 
 const router = Router();
 

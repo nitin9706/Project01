@@ -1,7 +1,7 @@
-import { asyncHandler } from "../utility/asyncHandler.js";
-import { User } from "../models/user.model.js";
-import { ApiResponse } from "../utility/ApiResponse.js";
-import { ApiError } from "../utility/ApiError.js";
+import { asyncHandler } from "../../../../Backend/src/utility/asyncHandler.js";
+import { User } from "./user.model.js";
+import { ApiResponse } from "../../../../Backend/src/utility/ApiResponse.js";
+import { ApiError } from "../../../../Backend/src/utility/ApiError.js";
 import jwt from "jsonwebtoken";
 
 // making the access and refresh token for the user

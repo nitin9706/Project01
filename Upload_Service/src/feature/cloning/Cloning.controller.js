@@ -12,6 +12,7 @@ import {
 } from "../../utility/UploadingToS3.js";
 import { triggerDeployment } from "../../service/redis.service.js";
 import { Deployment } from "../deployment/deployment.model.js";
+import { User } from "../Users/user.model.js";
 
 const cloneProject = asyncHandler(async (req, res) => {
   const { repoUrl } = req.body;
@@ -93,6 +94,70 @@ const cloneProject = asyncHandler(async (req, res) => {
   }
 });
 
+const getAllProjects = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  // fetching user first
+
+  const user = await User.findById(userId);
+
+  if (!user) throw new ApiError(404, "User doesn't Exist");
+
+  const allDeployment = await Deployment.findById(userId);
+
+  if (!allDeployment) {
+    return res
+      .json(500)
+      .json(
+        new ApiResponse(500, allDeployment, "You Don't have any Deployments"),
+      );
+  }
+
+  return res
+    .json(500)
+    .json(new ApiResponse(500, allDeployment, "Here is the Your Deployment"));
+});
+
+const getAnyProject = asyncHandler(async (req, res) => {
+  const projectId = req.params.id;
+
+  const specificDeployment = await Deployment.findById(projectId);
+
+  if (!specificDeployment) throw new ApiError(404, "Invaild Deployment");
+
+  return res
+    .json(500)
+    .json(
+      new ApiResponse(500, specificDeployment, "Here is the Your Deployment"),
+    );
+});
+
+const deleteDeployment = asyncHandler(async (req, res) => {
+  const projectId = req.params.id;
+
+  const deletedDeployment = await Deployment.findByIdAndDelete(projectId);
+
+  // check if it is deleted or not
+
+  const checkDeletedDeploment = await Deployment.findById(projectId);
+
+  if (!checkDeletedDeploment)
+    throw new ApiError(400, "Deployment Deletion Failed");
+
+  await deleteFromS3(deletedDeployment.deploymentId);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        deletedDeployment,
+        "Deployment Deleted successfully",
+      ),
+    );
+});
+
+// test controllers
 const checks3folder = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -142,4 +207,11 @@ const deleteOnS3 = asyncHandler(async (req, res) => {
   }
 });
 
-export { cloneProject, checks3folder, deleteOnS3 };
+export {
+  cloneProject,
+  checks3folder,
+  deleteOnS3,
+  getAllProjects,
+  getAnyProject,
+  deleteDeployment,
+};

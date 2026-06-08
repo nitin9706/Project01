@@ -8,6 +8,12 @@ const deploymentSchema = new Schema(
       unique: true,
     },
 
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
     projectName: {
       type: String,
       required: true,
@@ -19,18 +25,23 @@ const deploymentSchema = new Schema(
       default: "queued",
     },
 
-    url: String,
-
-    buildLogs: [String],
-
-    error: String,
-
-    createdAt: {
-      type: Date,
-      default: Date.now,
+    url: {
+      type: String,
     },
 
-    deployedAt: Date,
+    buildLogs: [
+      {
+        type: String,
+      },
+    ],
+
+    error: {
+      type: String,
+    },
+
+    deployedAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
