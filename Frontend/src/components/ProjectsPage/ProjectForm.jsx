@@ -6,17 +6,6 @@ export default function ProjectForm() {
     <form className="w-full space-y-6">
       <div>
         <label className="mb-2 block text-sm font-medium text-(--text-secondary)">
-          Project Name
-        </label>
-        <input
-          type="text"
-          placeholder="my-awesome-app"
-          className={inputClass}
-        />
-      </div>
-
-      <div>
-        <label className="mb-2 block text-sm font-medium text-(--text-secondary)">
           GitHub Repository
         </label>
         <input
@@ -28,21 +17,17 @@ export default function ProjectForm() {
 
       <div>
         <label className="mb-2 block text-sm font-medium text-(--text-secondary)">
-          Branch
-        </label>
-        <input type="text" defaultValue="main" className={inputClass} />
-      </div>
-
-      <div>
-        <label className="mb-2 block text-sm font-medium text-(--text-secondary)">
           Framework
         </label>
         <select className={inputClass}>
-          <option>React</option>
-          <option>Next.js</option>
+          <option>React + Vite</option>
+          {/* <option>Next.js</option>
           <option>Node.js</option>
-          <option>Vite</option>
+          <option>Vite</option> */}
         </select>
+        <p className="text-red-500 text-[13px] capitalize">
+          only Serving Vite + React project currently *{" "}
+        </p>
       </div>
 
       <button
