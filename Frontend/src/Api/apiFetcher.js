@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosClient = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_API,
+  baseURL: import.meta.env.VITE_BACKEND_API || "http://localhost:8000/api/v1",
   timeout: 30000,
   headers: {
     "Content-Type": "application/json",
@@ -14,6 +14,18 @@ axiosClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
 
+    // Debug: show outgoing request url and whether token exists
+    // (remove or lower verbosity in production)
+    try {
+      // eslint-disable-next-line no-console
+      console.debug(
+        "API Request:",
+        config.method,
+        config.baseURL + config.url,
+        token ? "with-token" : "no-token",
+      );
+    } catch (e) {}
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -25,7 +37,13 @@ axiosClient.interceptors.request.use(
 
 // Response Interceptor
 axiosClient.interceptors.response.use(
-  (response) => response.data,
+  (response) => {
+    try {
+      // eslint-disable-next-line no-console
+      console.debug("API Response:", response.config.url, response.status);
+    } catch (e) {}
+    return response.data;
+  },
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
@@ -41,5 +59,3 @@ axiosClient.interceptors.response.use(
 );
 
 export default axiosClient;
-
-

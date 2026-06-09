@@ -24,6 +24,16 @@ services:
     volumes:
       - deployments:/var/www/deployments
 
+  frontend:
+    build:
+      context: ./Frontend
+    container_name: frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - upload_service
+
   redis:
     image: redis:7-alpine
     container_name: redis

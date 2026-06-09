@@ -95,7 +95,7 @@ const cloneProject = asyncHandler(async (req, res) => {
 });
 
 const getAllProjects = asyncHandler(async (req, res) => {
-  const userId = req.user._id;
+  const userId = req.user?._id;
 
   // fetching user first
 

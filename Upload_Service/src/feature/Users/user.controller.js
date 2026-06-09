@@ -1,7 +1,7 @@
-import { asyncHandler } from "../../../../Backend/src/utility/asyncHandler.js";
+import { asyncHandler } from "../../utility/asyncHandler.js";
 import { User } from "./user.model.js";
-import { ApiResponse } from "../../../../Backend/src/utility/ApiResponse.js";
-import { ApiError } from "../../../../Backend/src/utility/ApiError.js";
+import { ApiResponse } from "../../utility/ApiResponse.js";
+import { ApiError } from "../../utility/ApiError.js";
 import jwt from "jsonwebtoken";
 
 // making the access and refresh token for the user
@@ -89,7 +89,13 @@ const loginUser = asyncHandler(async (req, res) => {
     .status(200)
     .cookie("refreshToken", refreshToken, options)
     .cookie("accessToken", accessToken, options)
-    .json(new ApiResponse(200, userData, "User Logged In Successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        { user: userData, accessToken, refreshToken },
+        "User Logged In Successfully",
+      ),
+    );
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
@@ -97,7 +103,7 @@ const logoutUser = asyncHandler(async (req, res) => {
   const user = await User.findById(userId);
 
   if (!user) {
-    return res.json(new ApiError(404, ` User Not Found `));
+    return res.status(404).json(new ApiResponse(404, {}, "User Not Found"));
   }
   user.refreshToken = null;
   await user.save({ validateBeforeSave: false });
@@ -139,7 +145,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     .status(200)
     .cookie("refreshToken", newRefreshToken, options)
     .cookie("accessToken", accessToken, options)
-    .json(new ApiResponse(200, {}, "Access Token Refreshed Successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        { accessToken, refreshToken: newRefreshToken },
+        "Access Token Refreshed Successfully",
+      ),
+    );
 });
 
 const deleteUser = asyncHandler(async (req, res) => {

@@ -20,7 +20,9 @@ export default function Login() {
         password: password,
       });
       if (response.success) {
-        localStorage.setItem("token", response.data.accessToken);
+        if (response.data?.accessToken) {
+          localStorage.setItem("token", response.data.accessToken);
+        }
         navigate("/dashboard");
       } else {
         setError(response.message || "Login failed");
