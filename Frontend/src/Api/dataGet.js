@@ -47,3 +47,5 @@ export const getDeployment = async (id) => {
 export const deleteDeployment = async (id) => {
   return await axiosClient.delete(`/clone/deleteProject/${id}`);
 };
+
+

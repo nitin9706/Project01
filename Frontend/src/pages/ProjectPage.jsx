@@ -6,7 +6,7 @@ export default function CreateProject() {
   return (
     <DashboardLayout>
       <div className="relative mx-auto flex max-w-2xl flex-col items-center py-8">
-        <div className="w-full rounded-4xl border border-(--border-primary) bg-(--bg-card)/80 p-8 shadow-(--shadow-primary) backdrop-blur-xl sm:p-10">
+        <div className="w-full rounded-[40px] border border-(--border-primary) bg-(--bg-card)/80 p-8 shadow-(--shadow-primary) backdrop-blur-xl sm:p-10">
           <div className="mb-2 flex justify-center">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-(--border-accent) bg-(--glow-primary) text-(--accent-primary)">
               <GitBranch size={28} />

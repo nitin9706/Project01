@@ -1,32 +1,92 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Menu, X, LayoutDashboard, PlusCircle } from "lucide-react";
 import ThemeToggle from "../common/ThemeToggle";
 
-export default function Navbar() {
-  return (
-    <header className="sticky top-0 z-40 border-b border-(--border-primary) bg-(--bg-navbar)/80 px-6 py-4 backdrop-blur-2xl">
-      <div className="flex items-center justify-between">
-        <Link to="/dashboard" className="flex items-center gap-3 lg:hidden">
-          <div
-            style={{ background: "var(--gradient-primary)" }}
-            className="flex h-10 w-10 items-center justify-center rounded-2xl text-sm font-bold text-(--text-white)"
-          >
-            D
-          </div>
-          <span className="text-lg font-semibold tracking-wide">Deployify</span>
-        </Link>
+const navItems = [
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/projects/create", label: "Create Project", icon: PlusCircle },
+];
 
-        <p className="hidden text-sm text-(--text-secondary) lg:block">
+export default function Navbar() {
+  const { pathname } = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <header className="sticky top-0 z-40 border-b border-[var(--border-primary)] bg-[var(--bg-navbar)]/80 px-4 py-4 backdrop-blur-2xl lg:px-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <Link to="/dashboard" className="flex items-center gap-3">
+            <div
+              style={{ background: "var(--gradient-primary)" }}
+              className="flex h-10 w-10 items-center justify-center rounded-2xl text-sm font-bold text-[var(--text-white)]"
+            >
+              D
+            </div>
+            <span className="hidden text-lg font-semibold tracking-wide text-[var(--text-primary)] sm:block">
+              Deployify
+            </span>
+          </Link>
+
+          <button
+            type="button"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] text-[var(--text-secondary)] transition hover:border-[var(--border-accent)] hover:text-[var(--text-primary)] lg:hidden"
+            onClick={() => setIsOpen((prev) => !prev)}
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+          >
+            {isOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+
+        <p className="hidden text-sm text-[var(--text-secondary)] lg:block">
           Manage deployments, logs, and project settings
         </p>
 
-        <div className="flex items-center gap-3">
+        <div className="hidden items-center gap-3 lg:flex">
           <ThemeToggle />
           <button
             type="button"
-            className="rounded-2xl border border-(--border-primary) bg-(--bg-card) px-5 py-2.5 text-sm font-medium text-(--text-secondary) backdrop-blur-xl transition hover:border-(--border-accent) hover:text-(--text-primary)"
+            className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] backdrop-blur-xl transition hover:border-[var(--border-accent)] hover:text-[var(--text-primary)]"
           >
             Logout
           </button>
+        </div>
+      </div>
+
+      <div className={`${isOpen ? "block" : "hidden"} lg:hidden mt-4`}>
+        <div className="rounded-[28px] border border-[var(--border-primary)] bg-[var(--bg-secondary)]/95 p-4 shadow-[var(--shadow-primary)] backdrop-blur-xl">
+          <nav className="space-y-2">
+            {navItems.map(({ to, label, icon: Icon }) => {
+              const isActive = pathname === to || pathname.startsWith(to);
+              return (
+                <Link
+                  key={to}
+                  to={to}
+                  className={`flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                    isActive
+                      ? "border border-[var(--border-accent)] bg-[var(--bg-card)] text-[var(--accent-light)]"
+                      : "text-[var(--text-secondary)] hover:border hover:border-[var(--border-primary)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)]"
+                  }`}
+                >
+                  <Icon
+                    size={18}
+                    className={isActive ? "text-[var(--accent-primary)]" : ""}
+                  />
+                  {label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="mt-4 flex flex-col gap-3 border-t border-[var(--border-primary)] pt-4">
+            <ThemeToggle />
+            <button
+              type="button"
+              className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-3 text-sm font-medium text-[var(--text-secondary)] transition hover:border-[var(--border-accent)] hover:text-[var(--text-primary)]"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </div>
     </header>

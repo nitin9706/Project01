@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-950 text-white px-4">
@@ -11,7 +13,7 @@ export default function Register() {
                 style={{
                   background: "var(--gradient-primary)",
                 }}
-                className="flex h-11 w-11 items-center justify-center rounded-2xl text-lg font-bold text-(--text-white)"
+                className="flex h-11 w-11 items-center justify-center rounded-2xl text-lg font-bold text-[var(--text-white)]"
               >
                 D
               </div>
@@ -21,7 +23,7 @@ export default function Register() {
                   Deployify
                 </h1>
 
-                <p className="text-xs text-(--text-secondary)">
+                <p className="text-xs text-[var(--text-secondary)]">
                   Deployment Platform
                 </p>
               </div>
@@ -57,4 +59,5 @@ export default function Register() {
     </div>
   );
 }
-  
+
+

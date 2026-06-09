@@ -6,6 +6,7 @@ const axiosClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 // Request Interceptor
@@ -40,3 +41,5 @@ axiosClient.interceptors.response.use(
 );
 
 export default axiosClient;
+
+

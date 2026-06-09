@@ -5,7 +5,7 @@ export default function ProjectForm() {
   const [repoUrl, setRepoUrl] = useState("");
 
   const inputClass =
-    "w-full rounded-2xl border border-(--border-primary) bg-(--bg-secondary) px-4 py-3 text-(--text-primary) outline-none transition placeholder:text-(--text-muted) focus:border-(--border-accent) focus:ring-2 focus:ring-(--glow-primary)";
+    "w-full rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-4 py-3 text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--border-accent)] focus:ring-2 focus:ring-[var(--glow-primary)]";
 
   const deploy = () => {
     // createDeployment(repoUrl);
@@ -21,7 +21,7 @@ export default function ProjectForm() {
       }}
     >
       <div>
-        <label className="mb-2 block text-sm font-medium text-(--text-secondary)">
+        <label className="mb-2 block text-sm font-medium text-[var(--text-secondary)]">
           GitHub Repository
         </label>
         <input
@@ -36,7 +36,7 @@ export default function ProjectForm() {
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-(--text-secondary)">
+        <label className="mb-2 block text-sm font-medium text-[var(--text-secondary)]">
           Framework
         </label>
         <select className={inputClass}>
@@ -53,10 +53,12 @@ export default function ProjectForm() {
       <button
         type="submit"
         style={{ background: "var(--gradient-primary)" }}
-        className="w-full rounded-2xl px-6 py-3.5 font-semibold text-(--text-white) shadow-(--shadow-primary) transition hover:scale-[1.02]"
+        className="w-full rounded-2xl px-6 py-3.5 font-semibold text-[var(--text-white)] shadow-[var(--shadow-primary)] transition hover:scale-[1.02]"
       >
         Create Project
       </button>
     </form>
   );
 }
+
+
