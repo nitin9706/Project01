@@ -95,66 +95,63 @@ const cloneProject = asyncHandler(async (req, res) => {
 });
 
 const getAllProjects = asyncHandler(async (req, res) => {
-  const userId = req.user?._id;
+  const userId = req.user._id;
 
-  // fetching user first
-
-  const user = await User.findById(userId);
-
-  if (!user) throw new ApiError(404, "User doesn't Exist");
-
-  const allDeployment = await Deployment.findById(userId);
-
-  if (!allDeployment) {
-    return res
-      .json(500)
-      .json(
-        new ApiResponse(500, allDeployment, "You Don't have any Deployments"),
-      );
-  }
+  const allDeployments = await Deployment.find({ userId });
 
   return res
-    .json(500)
-    .json(new ApiResponse(500, allDeployment, "Here is the Your Deployment"));
+    .status(200)
+    .json(
+      new ApiResponse(200, allDeployments, "Deployments fetched successfully"),
+    );
 });
 
 const getAnyProject = asyncHandler(async (req, res) => {
   const projectId = req.params.id;
 
-  const specificDeployment = await Deployment.findById(projectId);
+  const specificDeployment = await Deployment.findOne({
+    _id: projectId,
+    userId: req.user._id,
+  });
 
-  if (!specificDeployment) throw new ApiError(404, "Invaild Deployment");
-
-  return res
-    .json(500)
-    .json(
-      new ApiResponse(500, specificDeployment, "Here is the Your Deployment"),
-    );
-});
-
-const deleteDeployment = asyncHandler(async (req, res) => {
-  const projectId = req.params.id;
-
-  const deletedDeployment = await Deployment.findByIdAndDelete(projectId);
-
-  // check if it is deleted or not
-
-  const checkDeletedDeploment = await Deployment.findById(projectId);
-
-  if (!checkDeletedDeploment)
-    throw new ApiError(400, "Deployment Deletion Failed");
-
-  await deleteFromS3(deletedDeployment.deploymentId);
+  if (!specificDeployment) {
+    throw new ApiError(404, "Invalid Deployment");
+  }
 
   return res
     .status(200)
     .json(
       new ApiResponse(
         200,
-        deletedDeployment,
-        "Deployment Deleted successfully",
+        specificDeployment,
+        "Deployment fetched successfully",
       ),
     );
+});
+
+const deleteDeployment = asyncHandler(async (req, res) => {
+  const projectId = req.params.id;
+  const userId = req.user._id;
+
+  // Find deployment belonging to the logged-in user
+  const deployment = await Deployment.findOne({
+    _id: projectId,
+    userId,
+  });
+
+  if (!deployment) {
+    throw new ApiError(404, "Deployment not found");
+  }
+
+  // Delete files from S3 first
+  await deleteFromS3(deployment.deploymentId);
+
+  // Delete deployment from database
+  await deployment.deleteOne();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, deployment, "Deployment deleted successfully"));
 });
 
 // test controllers
