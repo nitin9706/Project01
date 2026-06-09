@@ -16,6 +16,7 @@ import { User } from "../Users/user.model.js";
 
 const cloneProject = asyncHandler(async (req, res) => {
   const { repoUrl } = req.body;
+  const userId = req.user.id;
 
   if (!repoUrl) {
     throw new ApiError(400, "Repository URL is required");
@@ -50,6 +51,7 @@ const cloneProject = asyncHandler(async (req, res) => {
       deploymentId: id,
       projectName: projectName || "",
       status: "queued",
+      userId: userId,
     });
 
     const deploymentDoc = await Deployment.findById(deploymentEntry._id);

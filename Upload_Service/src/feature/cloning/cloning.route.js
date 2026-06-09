@@ -1,5 +1,5 @@
 import Router from "express";
-// import { verifyJWT } from "../../../Backend/src/Middleware/Auth.middleware.js";
+import { verifyJWT } from "../../Middleware/auth.middleware.js";
 import {
   cloneProject,
   checks3folder,
@@ -10,7 +10,7 @@ import {
 } from "./Cloning.controller.js";
 const router = Router();
 
-// router.use(verifyJWT);
+router.use(verifyJWT);
 
 router.route("/createClone").post(cloneProject);
 router.route("/getAllProjects").get(getAllProjects);

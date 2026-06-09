@@ -5,8 +5,6 @@ import { createDeployment } from "../../Api/dataGet.js";
 export default function ProjectForm() {
   const [repoUrl, setRepoUrl] = useState("");
   const [framework, setFramework] = useState("React + Vite");
-  const [buildCommand, setBuildCommand] = useState("");
-  const [outputDirectory, setOutputDirectory] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -23,12 +21,8 @@ export default function ProjectForm() {
       const response = await createDeployment({
         name: repoUrl.split("/").pop() || "project",
         repoUrl: repoUrl,
-        branch: "main",
         framework: framework,
-        buildCommand: buildCommand || "npm run build",
-        outputDirectory: outputDirectory || "dist",
         status: "active",
-        AutoDeploy: true,
       });
 
       if (response.success) {
