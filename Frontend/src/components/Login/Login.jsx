@@ -1,15 +1,35 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../Api/dataGet.js";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const senddata = () => {
-    loginUser({
-      email: email,
-      password: password,
-    });
+  const senddata = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await loginUser({
+        email: email,
+        password: password,
+      });
+      if (response.success) {
+        localStorage.setItem("token", response.data.accessToken);
+        navigate("/dashboard");
+      } else {
+        setError(response.message || "Login failed");
+      }
+    } catch (err) {
+      setError(err.message || "An error occurred during login");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,12 +63,12 @@ export default function Login() {
         </div>
         <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
         <p className="text-zinc-400 mb-6">Login to your deployment platform</p>
-        <form
-          className="space-y-4"
-          onSubmit={() => {
-            senddata();
-          }}
-        >
+        <form className="space-y-4" onSubmit={senddata}>
+          {error && (
+            <div className="bg-red-500/10 border border-red-500 text-red-500 px-3 py-2 rounded-xl text-sm">
+              {error}
+            </div>
+          )}
           <input
             type="email"
             placeholder="Email"
@@ -57,6 +77,7 @@ export default function Login() {
             onChange={(e) => {
               setEmail(e.target.value);
             }}
+            required
           />
 
           <input
@@ -67,18 +88,18 @@ export default function Login() {
             onChange={(e) => {
               setPassword(e.target.value);
             }}
+            required
           />
 
           <button
-            className="w-full bg-white text-black py-3 rounded-xl font-semibold hover:opacity-90 transition cursor-pointer active:scale-98 hover:bg-white/90"
+            className="w-full bg-white text-black py-3 rounded-xl font-semibold hover:opacity-90 transition cursor-pointer active:scale-98 hover:bg-white/90 disabled:opacity-50"
             type="submit"
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>
     </div>
   );
 }
-
-

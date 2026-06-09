@@ -1,6 +1,34 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { registerUser } from "../../Api/dataGet.js";
 
 export default function Register() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await registerUser({ name, email, password });
+      if (response.success) {
+        navigate("/login");
+      } else {
+        setError(response.message || "Registration failed");
+      }
+    } catch (err) {
+      setError(err.message || "An error occurred during registration");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-950 text-white px-4">
       <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-xl ">
@@ -33,31 +61,47 @@ export default function Register() {
         <h1 className="text-3xl font-bold mb-2">Create Account</h1>
         <p className="text-zinc-400 mb-6">Start deploying your apps</p>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleRegister}>
+          {error && (
+            <div className="bg-red-500/10 border border-red-500 text-red-500 px-3 py-2 rounded-xl text-sm">
+              {error}
+            </div>
+          )}
           <input
             type="text"
             placeholder="Name"
             className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 outline-none"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
           />
 
           <input
             type="email"
             placeholder="Email"
             className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 outline-none"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
 
           <input
             type="password"
             placeholder="Password"
             className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 outline-none"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
           />
-          <button className="w-full bg-white text-black py-3 rounded-xl font-semibold hover:opacity-90 transition cursor-pointer active:bg-white/70 active:scale-98">
-            Register
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-white text-black py-3 rounded-xl font-semibold hover:opacity-90 transition cursor-pointer active:bg-white/70 active:scale-98 disabled:opacity-50"
+          >
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
       </div>
     </div>
   );
 }
-
-

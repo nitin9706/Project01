@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, LayoutDashboard, PlusCircle } from "lucide-react";
 import ThemeToggle from "../common/ThemeToggle";
+import { logoutUser } from "../../Api/dataGet.js";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -10,7 +11,22 @@ const navItems = [
 
 export default function Navbar() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await logoutUser();
+      localStorage.removeItem("token");
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setLoggingOut(false);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--border-primary)] bg-[var(--bg-navbar)]/80 px-4 py-4 backdrop-blur-2xl lg:px-6">
@@ -46,9 +62,11 @@ export default function Navbar() {
           <ThemeToggle />
           <button
             type="button"
-            className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] backdrop-blur-xl transition hover:border-[var(--border-accent)] hover:text-[var(--text-primary)]"
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] backdrop-blur-xl transition hover:border-[var(--border-accent)] hover:text-[var(--text-primary)] disabled:opacity-50"
           >
-            Logout
+            {loggingOut ? "Logging out..." : "Logout"}
           </button>
         </div>
       </div>
@@ -82,9 +100,11 @@ export default function Navbar() {
             <ThemeToggle />
             <button
               type="button"
-              className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-3 text-sm font-medium text-[var(--text-secondary)] transition hover:border-[var(--border-accent)] hover:text-[var(--text-primary)]"
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-3 text-sm font-medium text-[var(--text-secondary)] transition hover:border-[var(--border-accent)] hover:text-[var(--text-primary)] disabled:opacity-50"
             >
-              Logout
+              {loggingOut ? "Logging out..." : "Logout"}
             </button>
           </div>
         </div>

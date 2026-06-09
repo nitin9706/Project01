@@ -1,18 +1,80 @@
 import { ArrowLeft, Globe, Play } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import DashboardLayout from "./DashboardLayout";
+import { getDeployment } from "../../Api/dataGet.js";
 
 const logLines = [
   { text: "$ git pull origin main", className: "text-[var(--accent-light)]" },
   { text: "Updating branch main...", className: "text-[var(--terminal-text)]" },
   { text: "$ npm install", className: "text-[var(--accent-light)]" },
-  { text: "Installing dependencies...", className: "text-[var(--terminal-text)]" },
+  {
+    text: "Installing dependencies...",
+    className: "text-[var(--terminal-text)]",
+  },
   { text: "$ docker build .", className: "text-[var(--accent-light)]" },
-  { text: "Building Docker container...", className: "text-[var(--terminal-text)]" },
+  {
+    text: "Building Docker container...",
+    className: "text-[var(--terminal-text)]",
+  },
   { text: "✔ Deployment successful", className: "text-[var(--text-success)]" },
 ];
 
-export default function ProjectDetails() {
+export function ProjectDetails() {
+  const { id } = useParams();
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        setLoading(true);
+        const response = await getDeployment(id);
+        if (response.success) {
+          setProject(response.data);
+        } else {
+          setError(response.message || "Failed to fetch project");
+        }
+      } catch (err) {
+        setError(err.message || "Failed to fetch project details");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProject();
+    }
+  }, [id]);
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <p className="text-[var(--text-secondary)]">Loading project...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error || !project) {
+    return (
+      <DashboardLayout>
+        <Link
+          to="/dashboard"
+          className="mb-6 inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] transition hover:text-[var(--accent-light)]"
+        >
+          <ArrowLeft size={16} />
+          Back to dashboard
+        </Link>
+        <div className="rounded-[28px] border border-red-500/50 bg-red-500/10 p-6">
+          <p className="text-red-500">{error || "Project not found"}</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       <Link
@@ -26,10 +88,10 @@ export default function ProjectDetails() {
       <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h1 className="text-4xl font-extrabold tracking-tight text-[var(--text-primary)]">
-            portfolio-app
+            {project.name}
           </h1>
           <p className="mt-2 text-[var(--text-secondary)]">
-            github.com/user/portfolio-app
+            {project.RepoInfo?.repoUrl || "github.com/user/repo"}
           </p>
         </div>
 
@@ -70,9 +132,9 @@ export default function ProjectDetails() {
             </h2>
             <dl className="space-y-4">
               {[
-                ["Framework", "React"],
-                ["Branch", "main"],
-                ["Status", "Running"],
+                ["Framework", project.BuildConfig?.framework || "React"],
+                ["Branch", project.RepoInfo?.branch || "main"],
+                ["Status", project.status || "inactive"],
               ].map(([label, value]) => (
                 <div key={label}>
                   <dt className="text-xs uppercase tracking-wider text-[var(--text-muted)]">
@@ -98,7 +160,8 @@ export default function ProjectDetails() {
               <p className="text-xs uppercase tracking-wider">Live URL</p>
             </div>
             <p className="font-medium text-[var(--text-primary)]">
-              https://portfolio.deployify.app
+              https://{project.DeploymentConfig?.subdomain || "project"}
+              .deployify.app
             </p>
           </div>
         </div>
@@ -106,5 +169,3 @@ export default function ProjectDetails() {
     </DashboardLayout>
   );
 }
-
-
