@@ -23,6 +23,11 @@ export default function Login() {
         if (response.data?.accessToken) {
           localStorage.setItem("token", response.data.accessToken);
         }
+        if (response.data?.user) {
+          try {
+            localStorage.setItem("user", JSON.stringify(response.data.user));
+          } catch (e) {}
+        }
         navigate("/dashboard");
       } else {
         setError(response.message || "Login failed");
@@ -37,7 +42,10 @@ export default function Login() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[var(--bg-primary)] px-4">
       <div className="w-full max-w-sm">
-        <Link to="/" className="mb-8 inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
+        <Link
+          to="/"
+          className="mb-8 inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+        >
           ← Back home
         </Link>
 
@@ -81,7 +89,10 @@ export default function Login() {
 
           <p className="mt-5 text-center text-sm text-[var(--text-secondary)]">
             No account?{" "}
-            <Link to="/register" className="font-medium text-[var(--accent-primary)] hover:underline">
+            <Link
+              to="/register"
+              className="font-medium text-[var(--accent-primary)] hover:underline"
+            >
               Sign up
             </Link>
           </p>

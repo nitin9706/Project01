@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Menu,
   X,
@@ -10,6 +10,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import ThemeToggle from "../components/common/ThemeToggle";
+import ProfileAvatar from "../components/common/ProfileAvatar";
 
 const navLinks = [
   { label: "Product", href: "#product" },
@@ -87,6 +88,15 @@ function StatusBadge({ status }) {
 export default function Home() {
   const [navOpen, setNavOpen] = useState(false);
   const closeNav = () => setNavOpen(false);
+  const [avatarOpen, setAvatarOpen] = useState(false);
+  const navigate = useNavigate();
+  const storedUser = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user"));
+    } catch (e) {
+      return null;
+    }
+  })();
 
   return (
     <div className="landing-page min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
@@ -117,19 +127,51 @@ export default function Home() {
 
           <div className="flex items-center gap-2">
             <ThemeToggle className="!h-9 !w-9 !rounded-lg" />
-            <Link
-              to="/login"
-              className="hidden text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] sm:block"
-            >
-              Log in
-            </Link>
-            <Link
-              to="/register"
-              className="hidden rounded-lg px-4 py-2 text-sm font-medium text-white sm:inline-flex"
-              style={{ background: "var(--accent-primary)" }}
-            >
-              Get started
-            </Link>
+            {(() => {
+              try {
+                const u = JSON.parse(localStorage.getItem("user"));
+                if (u) {
+                  return (
+                    <Link to="/dashboard" className="flex items-center gap-2">
+                      <ProfileAvatar name={u.name || u.email} size={32} />
+                    </Link>
+                  );
+                }
+              } catch (e) {}
+
+              return (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setAvatarOpen((p) => !p)}
+                    className="inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] px-2 py-1 text-sm text-[var(--text-secondary)]"
+                  >
+                    <ProfileAvatar
+                      name={storedUser?.name || storedUser?.email}
+                      size={32}
+                    />
+                  </button>
+
+                  {avatarOpen && (
+                    <div className="absolute right-0 mt-2 w-40 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
+                      <button
+                        onClick={() => navigate("/profile")}
+                        className="w-full text-left px-3 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]"
+                      >
+                        Profile
+                      </button>
+                    </div>
+                  )}
+                  <Link
+                    to="/register"
+                    className="hidden rounded-lg px-4 py-2 text-sm font-medium text-white sm:inline-flex"
+                    style={{ background: "var(--accent-primary)" }}
+                  >
+                    Get started
+                  </Link>
+                </>
+              );
+            })()}
             <button
               type="button"
               onClick={() => setNavOpen(!navOpen)}
@@ -189,7 +231,7 @@ export default function Home() {
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link
-                to="/register"
+                to="/projects/create"
                 className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white"
                 style={{ background: "var(--accent-primary)" }}
               >
@@ -197,7 +239,7 @@ export default function Home() {
                 <ArrowRight size={16} />
               </Link>
               <Link
-                to="/login"
+                to="/dashboard"
                 className="inline-flex items-center rounded-lg border border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-2.5 text-sm font-medium text-[var(--text-primary)]"
               >
                 Log in to dashboard

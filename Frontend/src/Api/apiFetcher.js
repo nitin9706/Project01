@@ -1,7 +1,10 @@
 import axios from "axios";
 
+const BASE_URL =
+  import.meta.env.VITE_BACKEND_API || "http://localhost:8000/api/v1";
+
 const axiosClient = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_API || "http://localhost:8000/api/v1",
+  baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -12,18 +15,6 @@ const axiosClient = axios.create({
 axiosClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-
-    // Debug: show outgoing request url and whether token exists
-    // (remove or lower verbosity in production)
-    try {
-      // eslint-disable-next-line no-console
-      console.debug(
-        "API Request:",
-        config.method,
-        config.baseURL + config.url,
-        token ? "with-token" : "no-token",
-      );
-    } catch (e) {}
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -43,9 +34,38 @@ axiosClient.interceptors.response.use(
     } catch (e) {}
     return response.data;
   },
-  (error) => {
-    if (error.response?.status === 401) {
+  async (error) => {
+    const originalRequest = error.config;
+
+    // If unauthorized, try refreshing access token once and retry original request
+    if (error.response?.status === 401 && !originalRequest?._retry) {
+      originalRequest._retry = true;
+      try {
+        const refreshResp = await axios.post(
+          `${BASE_URL}/user/refreshAccessToken`,
+          {},
+          { withCredentials: true },
+        );
+
+        // refreshResp follows ApiResponse shape: { statusCode, data, message, success }
+        const newToken = refreshResp?.data?.data?.accessToken;
+        if (newToken) {
+          localStorage.setItem("token", newToken);
+          axiosClient.defaults.headers.Authorization = `Bearer ${newToken}`;
+          originalRequest.headers = originalRequest.headers || {};
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return axiosClient(originalRequest);
+        }
+      } catch (refreshError) {
+        // fall through to sign-out below
+      }
+    }
+
+    // If we reach here, token refresh failed or not applicable -> sign out
+    try {
       localStorage.removeItem("token");
+    } catch (e) {}
+    if (typeof window !== "undefined") {
       window.location.href = "/login";
     }
 

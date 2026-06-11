@@ -25,6 +25,15 @@ export const deployProject = async (
 
   const lockFile = path.join(deployRoot, `${deploymentId}.lock`);
 
+  await Deployment.findOneAndUpdate(
+    { deploymentId: deploymentId },
+    {
+      $push: {
+        buildLogs: "Building",
+      },
+    },
+  );
+
   try {
     await fs.mkdir(deployRoot, {
       recursive: true,
@@ -111,6 +120,7 @@ export const deployProject = async (
 
     await Deployment.findByIdAndUpdate(deploymentDoc._id, {
       status: "success",
+      url: `${process.env.DEPLOYMENT_BASE_URL}/${deploymentId}/`,
     });
 
     return {
@@ -122,6 +132,11 @@ export const deployProject = async (
     };
   } catch (error) {
     console.error(`[${deploymentId}] Deployment failed`, error);
+
+    await Deployment.findOneAndUpdate(
+      { deploymentId: deploymentId },
+      { error: error },
+    );
 
     // Cleanup temp deployment
     await fs.rm(tempDeployPath, {

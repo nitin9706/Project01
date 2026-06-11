@@ -25,6 +25,10 @@ export function ProjectDetails() {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -88,6 +92,31 @@ export function ProjectDetails() {
     ],
   ];
 
+  const handleDelete = () => {
+    setShowDeleteConfirmation(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      setDeleting(true);
+
+      // TODO: Replace with your API call
+      // await deleteDeployment(id);
+
+      console.log("Deleting project:", id);
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirmation(false);
+  };
+
   return (
     <DashboardLayout>
       <Link
@@ -99,7 +128,17 @@ export function ProjectDetails() {
       </Link>
 
       <div className="mb-6">
-        <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
+
+          <button
+            onClick={handleDelete}
+            className="rounded-md border border-red-500 px-3 py-1 text-sm text-red-500 transition-colors hover:bg-red-500 hover:text-white"
+          >
+            Delete
+          </button>
+        </div>
+
         {repoUrl && (
           <p className="mt-1 text-sm text-[var(--text-secondary)]">{repoUrl}</p>
         )}
@@ -165,6 +204,44 @@ export function ProjectDetails() {
           </div>
         </div>
       </div>
+      {showDeleteConfirmation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-xl border border-red-500/20 bg-[var(--bg-card)] p-8 shadow-2xl">
+            <h2 className="text-3xl font-bold text-red-500">Delete Project?</h2>
+
+            <p className="mt-4 text-[var(--text-secondary)]">
+              Are you sure you want to delete{" "}
+              <span className="font-semibold text-[var(--text-primary)]">
+                {title}
+              </span>
+              ?
+            </p>
+
+            <p className="mt-2 text-sm text-[var(--text-muted)]">
+              This action cannot be undone. All deployment data, logs, and
+              project information will be permanently removed.
+            </p>
+
+            <div className="mt-8 flex justify-end gap-3">
+              <button
+                onClick={cancelDelete}
+                disabled={deleting}
+                className="rounded-lg border border-[var(--border-primary)] px-5 py-2.5 text-sm hover:bg-[var(--bg-muted)]"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="rounded-lg bg-red-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleting ? "Deleting..." : "Delete Project"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }

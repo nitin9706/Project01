@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, LayoutDashboard, PlusCircle } from "lucide-react";
 import ThemeToggle from "../common/ThemeToggle";
 import { logoutUser } from "../../Api/dataGet.js";
+import ProfileAvatar from "../common/ProfileAvatar";
 
 const navItems = [
   { to: "/dashboard", label: "Projects", icon: LayoutDashboard },
@@ -13,6 +14,7 @@ export default function Navbar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [avatarOpen, setAvatarOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
   const handleLogout = async () => {
@@ -20,6 +22,7 @@ export default function Navbar() {
     try {
       await logoutUser();
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
       navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
@@ -27,6 +30,14 @@ export default function Navbar() {
       setLoggingOut(false);
     }
   };
+
+  const storedUser = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user"));
+    } catch (e) {
+      return null;
+    }
+  })();
 
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--border-primary)] bg-[var(--bg-navbar)] px-4 py-3 backdrop-blur-md lg:px-6">
@@ -53,14 +64,36 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-2 lg:flex lg:ml-auto">
           <ThemeToggle className="!h-9 !w-9 !rounded-lg" />
-          <button
-            type="button"
-            onClick={handleLogout}
-            disabled={loggingOut}
-            className="rounded-lg border border-[var(--border-primary)] px-4 py-2 text-sm text-[var(--text-secondary)] transition hover:text-[var(--text-primary)] disabled:opacity-50"
-          >
-            {loggingOut ? "Logging out..." : "Log out"}
-          </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setAvatarOpen((p) => !p)}
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] px-2 py-1 text-sm text-[var(--text-secondary)]"
+            >
+              <ProfileAvatar
+                name={storedUser?.name || storedUser?.email}
+                size={32}
+              />
+            </button>
+
+            {avatarOpen && (
+              <div className="absolute right-0 mt-2 w-40 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
+                <button
+                  onClick={() => navigate("/profile")}
+                  className="w-full text-left px-3 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]"
+                >
+                  Profile
+                </button>
+                <button
+                  onClick={handleLogout}
+                  disabled={loggingOut}
+                  className="w-full text-left px-3 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]"
+                >
+                  {loggingOut ? "Logging out..." : "Log out"}
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
