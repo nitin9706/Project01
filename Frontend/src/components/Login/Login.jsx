@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../Api/dataGet.js";
 
 export default function Login() {
@@ -9,16 +9,16 @@ export default function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const inputClass =
+    "w-full rounded-lg border border-[var(--border-primary)] bg-[var(--bg-input)] px-4 py-3 text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--border-accent)]";
+
   const senddata = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const response = await loginUser({
-        email: email,
-        password: password,
-      });
+      const response = await loginUser({ email, password });
       if (response.success) {
         if (response.data?.accessToken) {
           localStorage.setItem("token", response.data.accessToken);
@@ -28,79 +28,64 @@ export default function Login() {
         setError(response.message || "Login failed");
       }
     } catch (err) {
-      setError(err.message || "An error occurred during login");
+      setError(err.message || "Something went wrong. Try again?");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-950 text-white px-4">
-      <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-xl">
-        <div className="mb-5">
-          {/* Left */}
-          <div className="flex items-center gap-10">
-            {/* Logo */}
-            <div className="flex items-center gap-3">
-              <div
-                style={{
-                  background: "var(--gradient-primary)",
-                }}
-                className="flex h-11 w-11 items-center justify-center rounded-2xl text-lg font-bold text-[var(--text-white)]"
-              >
-                D
-              </div>
+    <div className="flex min-h-screen items-center justify-center bg-[var(--bg-primary)] px-4">
+      <div className="w-full max-w-sm">
+        <Link to="/" className="mb-8 inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
+          ← Back home
+        </Link>
 
-              <div className="leading-tight">
-                <h1 className="text-lg font-semibold tracking-wide">
-                  Deployify
-                </h1>
+        <div className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--bg-card)] p-7 shadow-[var(--shadow-card)]">
+          <h1 className="text-2xl font-semibold tracking-tight">Log in</h1>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+            To see your deployed projects.
+          </p>
 
-                <p className="text-xs text-[var(--text-secondary)]">
-                  Deployment Platform
-                </p>
+          <form className="mt-6 space-y-4" onSubmit={senddata}>
+            {error && (
+              <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-600">
+                {error}
               </div>
-            </div>
-          </div>
+            )}
+            <input
+              type="email"
+              placeholder="Email"
+              className={inputClass}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className={inputClass}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-lg py-3 text-sm font-medium text-[var(--text-white)] disabled:opacity-50"
+              style={{ background: "var(--accent-primary)" }}
+            >
+              {loading ? "One sec..." : "Log in"}
+            </button>
+          </form>
+
+          <p className="mt-5 text-center text-sm text-[var(--text-secondary)]">
+            No account?{" "}
+            <Link to="/register" className="font-medium text-[var(--accent-primary)] hover:underline">
+              Sign up
+            </Link>
+          </p>
         </div>
-        <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
-        <p className="text-zinc-400 mb-6">Login to your deployment platform</p>
-        <form className="space-y-4" onSubmit={senddata}>
-          {error && (
-            <div className="bg-red-500/10 border border-red-500 text-red-500 px-3 py-2 rounded-xl text-sm">
-              {error}
-            </div>
-          )}
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 outline-none"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
-            required
-          />
-
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 outline-none"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
-            required
-          />
-
-          <button
-            className="w-full bg-white text-black py-3 rounded-xl font-semibold hover:opacity-90 transition cursor-pointer active:scale-98 hover:bg-white/90 disabled:opacity-50"
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? "Logging in..." : "Login"}
-          </button>
-        </form>
       </div>
     </div>
   );

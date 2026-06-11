@@ -1,33 +1,26 @@
-import { GitBranch } from "lucide-react";
+import { Link } from "react-router-dom";
 import DashboardLayout from "../components/ProjectsPage/DashboardLayout";
 import ProjectForm from "../components/ProjectsPage/ProjectForm";
 
 export default function CreateProject() {
   return (
     <DashboardLayout>
-      <div className="relative mx-auto flex max-w-2xl flex-col items-center py-8">
-        <div className="w-full rounded-[40px] border border-(--border-primary) bg-(--bg-card)/80 p-8 shadow-(--shadow-primary) backdrop-blur-xl sm:p-10">
-          <div className="mb-2 flex justify-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-(--border-accent) bg-(--glow-primary) text-(--accent-primary)">
-              <GitBranch size={28} />
-            </div>
-          </div>
+      <div className="mx-auto max-w-lg py-4">
+        <Link
+          to="/dashboard"
+          className="mb-6 inline-block text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+        >
+          ← Back to projects
+        </Link>
 
-          <h1
-            className="mb-2 text-center text-4xl font-extrabold tracking-tight"
-            style={{
-              background: "var(--gradient-primary)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            Create Project
-          </h1>
-          <p className="mb-8 text-center text-(--text-secondary)">
-            Connect your GitHub repository and deploy to production.
+        <div className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--bg-card)] p-7 shadow-[var(--shadow-card)]">
+          <h1 className="text-2xl font-semibold tracking-tight">Add a repo</h1>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+            Paste a public GitHub URL.
           </p>
-
-          <ProjectForm />
+          <div className="mt-6">
+            <ProjectForm />
+          </div>
         </div>
       </div>
     </DashboardLayout>

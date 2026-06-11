@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <script>
       (function () {
         var t = localStorage.getItem("deployify-theme");
-        if (t === "light") document.documentElement.classList.remove("dark");
-        else if (t === "dark") document.documentElement.classList.add("dark");
+        if (t === "dark") document.documentElement.classList.add("dark");
+        else document.documentElement.classList.remove("dark");
       })();
     </script>
     <meta charset="UTF-8" />

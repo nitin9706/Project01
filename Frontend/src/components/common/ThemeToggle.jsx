@@ -15,5 +15,3 @@ export default function ThemeToggle({ className = "" }) {
     </button>
   );
 }
-
-

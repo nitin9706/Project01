@@ -3,11 +3,11 @@ import { useCallback, useEffect, useState } from "react";
 const STORAGE_KEY = "deployify-theme";
 
 function getInitialDark() {
-  if (typeof window === "undefined") return true;
+  if (typeof window === "undefined") return false;
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored === "light") return false;
   if (stored === "dark") return true;
-  return document.documentElement.classList.contains("dark");
+  return false;
 }
 
 function applyTheme(isDark) {
@@ -28,5 +28,3 @@ export default function useTheme() {
 
   return { isDark, toggleTheme, setIsDark };
 }
-
-

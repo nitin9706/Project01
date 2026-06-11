@@ -1,23 +1,23 @@
-import { ArrowLeft, Globe, Play } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import DashboardLayout from "./DashboardLayout";
 import { getDeployment } from "../../Api/dataGet.js";
 
 const logLines = [
-  { text: "$ git pull origin main", className: "text-[var(--accent-light)]" },
-  { text: "Updating branch main...", className: "text-[var(--terminal-text)]" },
+  { text: "$ git clone <repo-url>", className: "text-[var(--accent-light)]" },
+  { text: "Cloning repository...", className: "text-[var(--terminal-text)]" },
   { text: "$ npm install", className: "text-[var(--accent-light)]" },
   {
     text: "Installing dependencies...",
     className: "text-[var(--terminal-text)]",
   },
-  { text: "$ docker build .", className: "text-[var(--accent-light)]" },
+  { text: "$ npm run build", className: "text-[var(--accent-light)]" },
   {
-    text: "Building Docker container...",
+    text: "vite building for production...",
     className: "text-[var(--terminal-text)]",
   },
-  { text: "✔ Deployment successful", className: "text-[var(--text-success)]" },
+  { text: "✓ Build finished", className: "text-[var(--text-success)]" },
 ];
 
 export function ProjectDetails() {
@@ -34,26 +34,22 @@ export function ProjectDetails() {
         if (response.success) {
           setProject(response.data);
         } else {
-          setError(response.message || "Failed to fetch project");
+          setError(response.message || "Couldn't load this project");
         }
       } catch (err) {
-        setError(err.message || "Failed to fetch project details");
+        setError(err.message || "Couldn't load this project");
       } finally {
         setLoading(false);
       }
     };
 
-    if (id) {
-      fetchProject();
-    }
+    if (id) fetchProject();
   }, [id]);
 
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center min-h-screen">
-          <p className="text-[var(--text-secondary)]">Loading project...</p>
-        </div>
+        <p className="text-[var(--text-secondary)]">Loading...</p>
       </DashboardLayout>
     );
   }
@@ -63,105 +59,108 @@ export function ProjectDetails() {
       <DashboardLayout>
         <Link
           to="/dashboard"
-          className="mb-6 inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] transition hover:text-[var(--accent-light)]"
+          className="mb-6 inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
         >
           <ArrowLeft size={16} />
-          Back to dashboard
+          Back
         </Link>
-        <div className="rounded-[28px] border border-red-500/50 bg-red-500/10 p-6">
-          <p className="text-red-500">{error || "Project not found"}</p>
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-5 text-sm text-red-600">
+          {error || "Project not found"}
         </div>
       </DashboardLayout>
     );
   }
 
+  // Helper renderers for deployment and project shapes
+  const title = project.projectName || project.name || "Untitled";
+  const repoUrl = project.RepoInfo?.repoUrl || project.archiveUrl || null;
+  const details = [
+    ["Deployment ID", project.deploymentId || project.deployment_id || "—"],
+    ["Status", project.status || "unknown"],
+    ["URL", project.url || "—"],
+    [
+      "Deployed at",
+      project.deployedAt
+        ? new Date(project.deployedAt).toLocaleString()
+        : project.updatedAt
+          ? new Date(project.updatedAt).toLocaleString()
+          : "—",
+    ],
+  ];
+
   return (
     <DashboardLayout>
       <Link
         to="/dashboard"
-        className="mb-6 inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] transition hover:text-[var(--accent-light)]"
+        className="mb-6 inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
       >
         <ArrowLeft size={16} />
-        Back to dashboard
+        Back to projects
       </Link>
 
-      <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-[var(--text-primary)]">
-            {project.name}
-          </h1>
-          <p className="mt-2 text-[var(--text-secondary)]">
-            {project.RepoInfo?.repoUrl || "github.com/user/repo"}
-          </p>
-        </div>
-
-        <button
-          type="button"
-          style={{ background: "var(--gradient-primary)" }}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3.5 text-sm font-semibold text-[var(--text-white)] transition hover:scale-[1.03]"
-        >
-          <Play size={16} fill="currentColor" />
-          Deploy
-        </button>
+      <div className="mb-6">
+        <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
+        {repoUrl && (
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">{repoUrl}</p>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="overflow-hidden rounded-[28px] border border-[var(--border-primary)] bg-[var(--bg-secondary)] backdrop-blur-2xl lg:col-span-2">
-          <div className="flex items-center gap-2 border-b border-[var(--border-primary)] px-6 py-4">
-            <div className="h-3 w-3 rounded-full bg-[var(--terminal-red)]" />
-            <div className="h-3 w-3 rounded-full bg-[var(--terminal-yellow)]" />
-            <div className="h-3 w-3 rounded-full bg-[var(--terminal-green)]" />
-            <p className="ml-4 text-sm text-[var(--text-secondary)]">
-              deployment-terminal
-            </p>
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+        <div className="overflow-hidden rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)] lg:col-span-2">
+          <div className="flex items-center gap-2 border-b border-[var(--border-primary)] px-4 py-2.5">
+            <div className="h-2.5 w-2.5 rounded-full bg-[var(--terminal-red)]" />
+            <div className="h-2.5 w-2.5 rounded-full bg-[var(--terminal-yellow)]" />
+            <div className="h-2.5 w-2.5 rounded-full bg-[var(--terminal-green)]" />
+            <span className="ml-2 text-xs text-[var(--text-muted)]">
+              build output
+            </span>
           </div>
-
-          <div className="max-h-96 space-y-3 overflow-auto bg-[var(--bg-terminal)] p-6 font-mono text-sm">
-            {logLines.map((line) => (
-              <p key={line.text} className={line.className}>
-                {line.text}
-              </p>
-            ))}
+          <div className="max-h-80 space-y-2 overflow-auto bg-[var(--bg-terminal)] p-5 text-[13px]">
+            {Array.isArray(project.buildLogs) && project.buildLogs.length > 0
+              ? project.buildLogs.map((line, idx) => (
+                  <p key={idx} className="text-[var(--terminal-text)]">
+                    {line}
+                  </p>
+                ))
+              : logLines.map((line) => (
+                  <p key={line.text} className={line.className}>
+                    {line.text}
+                  </p>
+                ))}
+            <p className="pt-2 text-xs text-[var(--text-muted)]">
+              Real-time logs aren't hooked up yet.
+            </p>
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="rounded-[28px] border border-[var(--border-primary)] bg-[var(--bg-card)] p-6 backdrop-blur-xl">
-            <h2 className="mb-5 text-lg font-semibold text-[var(--text-primary)]">
-              Project Info
-            </h2>
-            <dl className="space-y-4">
-              {[
-                ["Framework", project.BuildConfig?.framework || "React"],
-                ["Branch", project.RepoInfo?.branch || "main"],
-                ["Status", project.status || "inactive"],
-              ].map(([label, value]) => (
+        <div className="space-y-4">
+          <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-5">
+            <h2 className="text-sm font-semibold">Details</h2>
+            <dl className="mt-4 space-y-3 text-sm">
+              {details.map(([label, value]) => (
                 <div key={label}>
-                  <dt className="text-xs uppercase tracking-wider text-[var(--text-muted)]">
-                    {label}
-                  </dt>
-                  <dd
-                    className={`mt-1 font-medium ${
-                      label === "Status"
-                        ? "text-[var(--text-success)]"
-                        : "text-[var(--text-primary)]"
-                    }`}
-                  >
-                    {value}
-                  </dd>
+                  <dt className="text-xs text-[var(--text-muted)]">{label}</dt>
+                  <dd className="mt-0.5 font-medium">{value}</dd>
                 </div>
               ))}
             </dl>
           </div>
 
-          <div className="rounded-[28px] border border-[var(--border-accent)] bg-[var(--bg-card)] p-6 backdrop-blur-xl">
-            <div className="mb-3 flex items-center gap-2 text-[var(--accent-light)]">
-              <Globe size={18} />
-              <p className="text-xs uppercase tracking-wider">Live URL</p>
-            </div>
-            <p className="font-medium text-[var(--text-primary)]">
-              https://{project.DeploymentConfig?.subdomain || "project"}
-              .deployify.app
+          <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-muted)] p-5 text-sm">
+            <p className="font-medium text-[var(--text-primary)]">Live URL</p>
+            <p className="mt-2 text-[var(--text-secondary)]">
+              {project.url ? (
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[var(--accent-primary)]"
+                >
+                  {project.url}
+                </a>
+              ) : (
+                "Not available yet. The deploy service will publish a URL when deployment succeeds."
+              )}
             </p>
           </div>
         </div>

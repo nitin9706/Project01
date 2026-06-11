@@ -65,14 +65,16 @@ const cloneProject = asyncHandler(async (req, res) => {
     await triggerDeployment(id, s3Key, deploymentEntry);
 
     return res.status(200).json(
-      new ApiResponse(200, "Repository uploaded successfully  and queued", {
-        success: true,
-
-        id,
-
-        archiveUrl: s3Url,
-        deploymentDoc,
-      }),
+      new ApiResponse(
+        200,
+        {
+          success: true,
+          id,
+          archiveUrl: s3Url,
+          deploymentDoc,
+        },
+        "Repository uploaded successfully  and queued",
+      ),
     );
   } catch (error) {
     console.error(error);
@@ -165,25 +167,28 @@ const checks3folder = asyncHandler(async (req, res) => {
   try {
     const s3Url = await checkS3FileExists(s3Key);
     if (!s3Url) {
-      return res.status(404).json(
-        new ApiResponse(404, "Archive not found in S3", {
-          exists: false,
-        }),
-      );
+      return res
+        .status(404)
+        .json(
+          new ApiResponse(404, { exists: false }, "Archive not found in S3"),
+        );
     }
-    return res.status(200).json(
-      new ApiResponse(200, "Archive exists in S3", {
-        exists: true,
-        archiveUrl: s3Url,
-      }),
-    );
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { exists: true, archiveUrl: s3Url },
+          "Archive exists in S3",
+        ),
+      );
   } catch (error) {
     if (error.code === "NotFound") {
-      return res.status(404).json(
-        new ApiResponse(404, "Archive not found in S3", {
-          exists: false,
-        }),
-      );
+      return res
+        .status(404)
+        .json(
+          new ApiResponse(404, { exists: false }, "Archive not found in S3"),
+        );
     }
     console.error(error);
     throw new ApiError(500, "Error checking S3 for archive");
@@ -195,11 +200,9 @@ const deleteOnS3 = asyncHandler(async (req, res) => {
   const s3Key = `archives/${id}.zip`;
   try {
     await deleteFromS3(s3Key);
-    return res.status(200).json(
-      new ApiResponse(200, "Archive deleted from S3", {
-        success: true,
-      }),
-    );
+    return res
+      .status(200)
+      .json(new ApiResponse(200, { success: true }, "Archive deleted from S3"));
   } catch (error) {
     console.error(error);
     throw new ApiError(500, "Error deleting archive from S3");

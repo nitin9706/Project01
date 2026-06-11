@@ -5,8 +5,8 @@ import ThemeToggle from "../common/ThemeToggle";
 import { logoutUser } from "../../Api/dataGet.js";
 
 const navItems = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/projects/create", label: "Create Project", icon: PlusCircle },
+  { to: "/dashboard", label: "Projects", icon: LayoutDashboard },
+  { to: "/projects/create", label: "Add repo", icon: PlusCircle },
 ];
 
 export default function Navbar() {
@@ -29,86 +29,76 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[var(--border-primary)] bg-[var(--bg-navbar)]/80 px-4 py-4 backdrop-blur-2xl lg:px-6">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 border-b border-[var(--border-primary)] bg-[var(--bg-navbar)] px-4 py-3 backdrop-blur-md lg:px-6">
+      <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <Link to="/dashboard" className="flex items-center gap-3">
+          <Link to="/dashboard" className="flex items-center gap-2 lg:hidden">
             <div
-              style={{ background: "var(--gradient-primary)" }}
-              className="flex h-10 w-10 items-center justify-center rounded-2xl text-sm font-bold text-[var(--text-white)]"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold text-[var(--text-white)]"
+              style={{ background: "var(--accent-primary)" }}
             >
               D
             </div>
-            <span className="hidden text-lg font-semibold tracking-wide text-[var(--text-primary)] sm:block">
-              Deployify
-            </span>
           </Link>
 
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] text-[var(--text-secondary)] transition hover:border-[var(--border-accent)] hover:text-[var(--text-primary)] lg:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-primary)] lg:hidden"
             onClick={() => setIsOpen((prev) => !prev)}
             aria-label={isOpen ? "Close menu" : "Open menu"}
           >
-            {isOpen ? <X size={20} /> : <Menu size={20} />}
+            {isOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
 
-        <p className="hidden text-sm text-[var(--text-secondary)] lg:block">
-          Manage deployments, logs, and project settings
-        </p>
-
-        <div className="hidden items-center gap-3 lg:flex">
-          <ThemeToggle />
+        <div className="hidden items-center gap-2 lg:flex lg:ml-auto">
+          <ThemeToggle className="!h-9 !w-9 !rounded-lg" />
           <button
             type="button"
             onClick={handleLogout}
             disabled={loggingOut}
-            className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] backdrop-blur-xl transition hover:border-[var(--border-accent)] hover:text-[var(--text-primary)] disabled:opacity-50"
+            className="rounded-lg border border-[var(--border-primary)] px-4 py-2 text-sm text-[var(--text-secondary)] transition hover:text-[var(--text-primary)] disabled:opacity-50"
           >
-            {loggingOut ? "Logging out..." : "Logout"}
+            {loggingOut ? "Logging out..." : "Log out"}
           </button>
         </div>
       </div>
 
-      <div className={`${isOpen ? "block" : "hidden"} lg:hidden mt-4`}>
-        <div className="rounded-[28px] border border-[var(--border-primary)] bg-[var(--bg-secondary)]/95 p-4 shadow-[var(--shadow-primary)] backdrop-blur-xl">
-          <nav className="space-y-2">
+      {isOpen && (
+        <div className="mt-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-card)] p-3 lg:hidden">
+          <nav className="space-y-1">
             {navItems.map(({ to, label, icon: Icon }) => {
               const isActive = pathname === to || pathname.startsWith(to);
               return (
                 <Link
                   key={to}
                   to={to}
-                  className={`flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                  onClick={() => setIsOpen(false)}
+                  className={`flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm ${
                     isActive
-                      ? "border border-[var(--border-accent)] bg-[var(--bg-card)] text-[var(--accent-light)]"
-                      : "text-[var(--text-secondary)] hover:border hover:border-[var(--border-primary)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)]"
+                      ? "bg-[var(--bg-muted)] font-medium text-[var(--accent-primary)]"
+                      : "text-[var(--text-secondary)]"
                   }`}
                 >
-                  <Icon
-                    size={18}
-                    className={isActive ? "text-[var(--accent-primary)]" : ""}
-                  />
+                  <Icon size={17} />
                   {label}
                 </Link>
               );
             })}
           </nav>
-
-          <div className="mt-4 flex flex-col gap-3 border-t border-[var(--border-primary)] pt-4">
-            <ThemeToggle />
+          <div className="mt-3 flex items-center gap-3 border-t border-[var(--border-primary)] pt-3">
+            <ThemeToggle className="!h-9 !w-9 !rounded-lg" />
             <button
               type="button"
               onClick={handleLogout}
               disabled={loggingOut}
-              className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-3 text-sm font-medium text-[var(--text-secondary)] transition hover:border-[var(--border-accent)] hover:text-[var(--text-primary)] disabled:opacity-50"
+              className="flex-1 rounded-lg border border-[var(--border-primary)] py-2 text-sm text-[var(--text-secondary)]"
             >
-              {loggingOut ? "Logging out..." : "Logout"}
+              {loggingOut ? "Logging out..." : "Log out"}
             </button>
           </div>
         </div>
-      </div>
+      )}
     </header>
   );
 }

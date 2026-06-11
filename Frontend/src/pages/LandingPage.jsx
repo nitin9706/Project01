@@ -1,460 +1,515 @@
-import { motion } from "framer-motion";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import {
+  Menu,
+  X,
+  ArrowRight,
+  GitBranch,
+  Hammer,
+  LayoutDashboard,
+  ChevronRight,
+} from "lucide-react";
 import ThemeToggle from "../components/common/ThemeToggle";
+
+const navLinks = [
+  { label: "Product", href: "#product" },
+  { label: "Workflow", href: "#workflow" },
+  { label: "Platform", href: "#platform" },
+  { label: "FAQ", href: "#faq" },
+];
+
+const workflow = [
+  {
+    icon: GitBranch,
+    title: "Connect repository",
+    description: "Add a public GitHub URL from your dashboard.",
+  },
+  {
+    icon: Hammer,
+    title: "Build pipeline",
+    description:
+      "Dependencies install and the production build runs automatically.",
+  },
+  {
+    icon: LayoutDashboard,
+    title: "Manage projects",
+    description:
+      "Track status, framework, and deployment details in one place.",
+  },
+];
+
+const platformRows = [
+  { name: "User accounts", status: "available" },
+  { name: "Public GitHub repos", status: "available" },
+  { name: "npm install & build", status: "available" },
+  { name: "Project dashboard", status: "available" },
+  { name: "Docker", status: "planned" },
+  { name: "Custom domains", status: "planned" },
+  { name: "Deploy on push", status: "planned" },
+  { name: "Environment variables", status: "planned" },
+  { name: "Live preview URLs", status: "planned" },
+];
+
+const faqs = [
+  {
+    q: "What repositories are supported?",
+    a: "Public GitHub repositories. Private repo access and OAuth are not available yet.",
+  },
+  {
+    q: "Which stack is supported?",
+    a: "Only React + Vite projects — the output of create-vite with the React template. Other frameworks are not supported yet.",
+  },
+  {
+    q: "What URL format should I use?",
+    a: "github.com/owner/repository works. https:// is optional.",
+  },
+  {
+    q: "Is there a hosted live URL?",
+    a: "Projects appear on your dashboard after build. Public hosting endpoints are not available yet.",
+  },
+];
+
+function StatusBadge({ status }) {
+  const isAvailable = status === "available";
+  return (
+    <span
+      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
+        isAvailable
+          ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+          : "bg-[var(--bg-muted)] text-[var(--text-muted)]"
+      }`}
+    >
+      {isAvailable ? "Available" : "Planned"}
+    </span>
+  );
+}
 
 export default function Home() {
   const [navOpen, setNavOpen] = useState(false);
-  const navLinks = [
-    { label: "Features", href: "#features" },
-    { label: "Deployments", href: "#deployments" },
-    { label: "Pricing", href: "#pricing" },
-    { label: "Docs", href: "#docs" },
-  ];
+  const closeNav = () => setNavOpen(false);
 
-  const containerVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.15,
-      },
-    },
-  };
-
-  const newLocal =
-    "min-h-screen overflow-x-hidden bg-(--bg-primary) text-[var(--text-primary)]";
-  const newLocal_1 =
-    "absolute left-20 top-20 h-37.5 w-37.5 rounded-full bg-[var(--glow-primary)] blur-3xl";
-  const newLocal_2 =
-    "rounded-2xl border border-(--border-primary) bg-(--bg-card) px-7 py-4 font-semibold text-[var(--text-primary)] backdrop-blur-xl";
   return (
-    <div
-      className={newLocal}
-      style={{
-        backgroundImage: "var(--gradient-background)",
-      }}
-    >
-      {/* Background Glow */}
-      <div className={newLocal_1} />
-
-      <div className="absolute bottom-0 right-0 h-31.25 w-31.25 rounded-full bg-(--glow-secondary) blur-3xl" />
-
-      {/* Navbar */}
-      <motion.nav className="fixed left-1/2 top-3 z-50 w-full max-w-6xl -translate-x-1/2 px-4">
-        <div className="rounded-[28px] border border-(--border-primary) bg-[var(--bg-navbar)]/95 px-4 py-4 shadow-[var(--shadow-primary)] backdrop-blur-2xl max-md:py-4 max-md:pb-0 ">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div
-                style={{
-                  background: "var(--gradient-primary)",
-                }}
-                className="flex h-11 w-11 items-center justify-center rounded-2xl text-lg font-bold text-[var(--text-white)]"
-              >
-                D
-              </div>
-
-              <div className="leading-tight">
-                <h1 className="text-lg font-semibold tracking-wide">
-                  Deployify
-                </h1>
-
-                <p className="text-xs text-[var(--text-secondary)]">
-                  Deployment Platform
-                </p>
-              </div>
+    <div className="landing-page min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
+      {/* Navigation */}
+      <header className="sticky top-0 z-50 border-b border-[var(--border-primary)] bg-[var(--bg-navbar)] backdrop-blur-lg">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+          <Link to="/" className="flex items-center gap-2.5">
+            <div
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold text-white"
+              style={{ background: "var(--accent-primary)" }}
+            >
+              D
             </div>
+            <span className="text-sm font-semibold">Deployify</span>
+          </Link>
 
-            <div className="hidden items-center gap-2 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-1 backdrop-blur-xl md:flex">
-              {navLinks.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="rounded-xl px-4 py-2 text-sm font-medium text-[var(--text-secondary)] transition hover:bg-white/5 hover:text-[var(--text-primary)]"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-3">
-              <ThemeToggle />
-
-              <Link
-                to={`/login`}
-                className="hidden rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] backdrop-blur-xl transition hover:border-[var(--border-accent)] hover:text-[var(--text-primary)] md:inline-flex"
+          <nav className="hidden items-center gap-8 md:flex">
+            {navLinks.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="text-sm text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]"
               >
-                Login
-              </Link>
+                {item.label}
+              </a>
+            ))}
+          </nav>
 
-              <Link
-                to={`/register`}
-                style={{
-                  background: "var(--gradient-primary)",
-                }}
-                className="rounded-2xl px-5 py-2.5 text-sm font-semibold text-[var(--text-white)] shadow-[var(--shadow-primary)] transition hover:scale-[1.03] hidden md:inline-flex"
-              >
-                Start Free
-              </Link>
-
-              <button
-                onClick={() => setNavOpen((open) => !open)}
-                aria-expanded={navOpen}
-                aria-controls="home-nav-mobile"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] text-[var(--text-secondary)] transition hover:bg-white/10 md:hidden"
-              >
-                {navOpen ? <X size={18} /> : <Menu size={18} />}
-                <span className="sr-only">Toggle navigation menu</span>
-              </button>
-            </div>
-          </div>
-
-          <div
-            id="home-nav-mobile"
-            className={`mt-4 overflow-hidden rounded-[24px] border border-[var(--border-primary)] bg-[var(--bg-card)]/95 p-4 text-sm text-[var(--text-secondary)] backdrop-blur-xl transition-all duration-300 md:hidden ${navOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"}`}
-          >
-            <div className="flex flex-col gap-2">
-              {navLinks.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setNavOpen(false)}
-                  className="rounded-2xl px-4 py-2 transition hover:bg-white/5 hover:text-[var(--text-primary)]"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
+          <div className="flex items-center gap-2">
+            <ThemeToggle className="!h-9 !w-9 !rounded-lg" />
+            <Link
+              to="/login"
+              className="hidden text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] sm:block"
+            >
+              Log in
+            </Link>
+            <Link
+              to="/register"
+              className="hidden rounded-lg px-4 py-2 text-sm font-medium text-white sm:inline-flex"
+              style={{ background: "var(--accent-primary)" }}
+            >
+              Get started
+            </Link>
+            <button
+              type="button"
+              onClick={() => setNavOpen(!navOpen)}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-primary)] md:hidden"
+              aria-label="Toggle menu"
+            >
+              {navOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
           </div>
         </div>
-      </motion.nav>
+
+        {navOpen && (
+          <div className="border-t border-[var(--border-primary)] px-6 py-4 md:hidden">
+            {navLinks.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={closeNav}
+                className="block py-2.5 text-sm text-[var(--text-secondary)]"
+              >
+                {item.label}
+              </a>
+            ))}
+            <div className="mt-4 flex gap-2 border-t border-[var(--border-primary)] pt-4">
+              <Link
+                to="/login"
+                onClick={closeNav}
+                className="flex-1 rounded-lg border border-[var(--border-primary)] py-2 text-center text-sm"
+              >
+                Log in
+              </Link>
+              <Link
+                to="/register"
+                onClick={closeNav}
+                className="flex-1 rounded-lg py-2 text-center text-sm font-medium text-white"
+                style={{ background: "var(--accent-primary)" }}
+              >
+                Get started
+              </Link>
+            </div>
+          </div>
+        )}
+      </header>
 
       {/* Hero */}
-      <motion.section
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-20 px-6 pb-24 pt-24 lg:pt-32 lg:grid-cols-2"
-      >
-        {/* Left */}
-        <div>
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-(--border-accent) bg-(--bg-card) px-4 py-2 text-sm text-(--accent-light) backdrop-blur-xl max-md:mt-10">
-            <span className="h-2 w-2 rounded-full bg-(--accent-primary) " />
-            Modern DevOps Infrastructure
-          </div>
-
-          <h1 className="text-5xl font-extrabold leading-tight md:text-7xl">
-            Deploy apps
-            <motion.span
-              style={{
-                background: "var(--gradient-primary)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-              className="block"
-              initial={{ y: 8, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.12 }}
-            >
-              without pain.
-            </motion.span>
-          </h1>
-
-          <p className="mt-8 max-w-xl text-lg leading-8 text-(--text-secondary)">
-            A modern deployment platform with GitHub integration, Docker
-            deployments, realtime logs, CI/CD pipelines, and cloud-native
-            infrastructure.
-          </p>
-
-          <div className="mt-10 flex flex-wrap gap-4">
-            <Link
-              to={`/projects/create`}
-              style={{ background: "var(--gradient-primary)" }}
-              className="rounded-2xl px-7 py-4 font-semibold text-(--text-white) transition"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 320 }}
-            >
-              Deploy Now
-            </Link>
-
-            <motion.button
-              className={newLocal_2}
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.15 }}
-            >
-              View Docs
-            </motion.button>
-          </div>
-
-          {/* Stats */}
-          <div className="mt-14 flex flex-wrap gap-10">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ delay: 0, duration: 0.5 }}
-            >
-              <h2 className="text-3xl font-bold text-[var(--accent-primary)]">
-                1M+
-              </h2>
-              <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                Deployments
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ delay: 0.08, duration: 0.5 }}
-            >
-              <h2 className="text-3xl font-bold text-[var(--accent-primary)]">
-                99.9%
-              </h2>
-              <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                Uptime
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ delay: 0.16, duration: 0.5 }}
-            >
-              <h2 className="text-3xl font-bold text-[var(--accent-primary)]">
-                5s
-              </h2>
-              <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                Average Deploy
-              </p>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Right Side */}
-        <div className="relative">
-          {/* Glow */}
-          <div className="absolute inset-0 rounded-[40px] bg-[var(--glow-primary)] blur-3xl" />
-
-          {/* Main Card */}
-          <motion.div
-            className="relative overflow-hidden rounded-[40px] border border-[var(--border-primary)] bg-[var(--bg-secondary)] backdrop-blur-2xl shadow-[var(--shadow-primary)]"
-            initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.18 }}
-            transition={{ duration: 0.6 }}
-          >
-            {/* Top Bar */}
-            <div className="flex items-center gap-2 border-b border-[var(--border-primary)] px-6 py-4">
-              <div className="h-3 w-3 rounded-full bg-[var(--terminal-red)]" />
-
-              <div className="h-3 w-3 rounded-full bg-[var(--terminal-yellow)]" />
-
-              <div className="h-3 w-3 rounded-full bg-[var(--terminal-green)]" />
-
-              <p className="ml-4 text-sm text-[var(--text-secondary)]">
-                deployment-terminal
-              </p>
-            </div>
-
-            {/* Terminal */}
-            <div className="space-y-5 bg-[var(--bg-terminal)] p-6 font-mono text-sm">
-              <p className="text-[var(--accent-light)]">
-                $ git clone github.com/nitin9706/app
-              </p>
-
-              <p className="text-[var(--terminal-text)]">
-                Cloning repository...
-              </p>
-
-              <p className="text-[var(--accent-light)]">$ npm install</p>
-
-              <p className="text-[var(--terminal-text)]">
-                Installing dependencies...
-              </p>
-
-              <p className="text-[var(--accent-light)]">$ docker build .</p>
-
-              <p className="text-[var(--terminal-text)]">
-                Building Docker container...
-              </p>
-
-              <p className="text-[var(--text-success)]">
-                ✔ Deployment successful
-              </p>
-
-              {/* Live URL */}
-              <div className="rounded-2xl border border-[var(--border-accent)] bg-[var(--bg-card)] p-5 backdrop-blur-xl">
-                <p className="text-xs uppercase tracking-wider text-[var(--accent-light)]">
-                  Live URL
-                </p>
-
-                <p className="mt-2 text-[var(--text-primary)]">
-                  https://portfolio.deployify.app
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </motion.section>
-
-      {/* Divider */}
-      <hr className="mx-auto rounded-full border-gray-500 border my-12" />
-      {/* Features */}
-      <motion.section className="mx-auto max-w-7xl px-6 pb-12 pt-24">
-        <div className="mb-16 text-center">
-          <h2 className="text-5xl font-bold">Built for modern developers</h2>
-
-          <p className="mt-5 text-lg text-[var(--text-secondary)]">
-            Everything needed for production-grade deployments.
-          </p>
-        </div>
-
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
-        >
-          {[
-            "GitHub Integration",
-            "Docker Deployments",
-            "Realtime Logs",
-            "CI/CD Automation",
-            "Custom Domains",
-            "Monitoring",
-          ].map((feature, idx) => (
-            <motion.div
-              key={feature}
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{
-                delay: idx * 0.09,
-                duration: 0.9,
-                type: "spring",
-                stiffness: 280,
-              }}
-              className="group rounded-[28px] border border-[var(--border-primary)] bg-[var(--bg-card)] p-8 backdrop-blur-xl transition"
-              whileHover={{ y: -6 }}
-            >
-              <div
-                style={{
-                  background: "var(--gradient-primary)",
-                }}
-                className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl text-xl font-bold text-[var(--text-white)] shadow-[var(--shadow-primary)]"
+      <section className="landing-hero border-b border-[var(--border-primary)]">
+        <div className="relative z-10 mx-auto max-w-6xl px-6 pb-20 pt-16 md:pt-24">
+          <div className="mx-auto max-w-3xl text-center">
+            <h1 className="text-4xl font-semibold tracking-tight text-[var(--text-primary)] md:text-5xl md:leading-[1.1]">
+              GitHub deployments,
+              <br className="hidden sm:block" />
+              managed in one place
+            </h1>
+            <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-[var(--text-secondary)] md:text-lg">
+              Deployify connects to your repository, runs the build, and keeps
+              every project organized on a single dashboard.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                to="/register"
+                className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white"
+                style={{ background: "var(--accent-primary)" }}
               >
-                ⚡
+                Start deploying
+                <ArrowRight size={16} />
+              </Link>
+              <Link
+                to="/login"
+                className="inline-flex items-center rounded-lg border border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-2.5 text-sm font-medium text-[var(--text-primary)]"
+              >
+                Log in to dashboard
+              </Link>
+            </div>
+          </div>
+
+          {/* Product preview */}
+          <div className="mx-auto mt-14 max-w-4xl">
+            <div className="overflow-hidden rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)] shadow-[var(--shadow-primary)]">
+              <div className="flex items-center justify-between border-b border-[var(--border-primary)] px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-[var(--terminal-red)]" />
+                  <div className="h-2 w-2 rounded-full bg-[var(--terminal-yellow)]" />
+                  <div className="h-2 w-2 rounded-full bg-[var(--terminal-green)]" />
+                  <span className="ml-2 text-xs text-[var(--text-muted)]">
+                    app.deployify.io/dashboard
+                  </span>
+                </div>
+                <span className="rounded-md bg-[var(--bg-muted)] px-2 py-0.5 text-xs font-medium text-[var(--accent-primary)]">
+                  Live
+                </span>
               </div>
 
-              <h3 className="text-2xl font-bold">{feature}</h3>
+              <div className="grid md:grid-cols-[200px_1fr]">
+                <div className="hidden border-r border-[var(--border-primary)] bg-[var(--bg-muted)] p-4 md:block">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+                    Menu
+                  </p>
+                  <div className="mt-3 space-y-1">
+                    <div className="rounded-md bg-[var(--bg-card)] px-3 py-2 text-xs font-medium text-[var(--accent-primary)]">
+                      Projects
+                    </div>
+                    <div className="rounded-md px-3 py-2 text-xs text-[var(--text-secondary)]">
+                      Add repo
+                    </div>
+                  </div>
+                </div>
 
-              <p className="mt-4 leading-7 text-[var(--text-secondary)]">
-                Powerful cloud-native infrastructure tools for scalable
-                deployments and automation.
+                <div className="p-5 md:p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-semibold">Your projects</p>
+                      <p className="text-xs text-[var(--text-muted)]">
+                        2 repositories
+                      </p>
+                    </div>
+                    <div
+                      className="rounded-lg px-3 py-1.5 text-xs font-medium text-white"
+                      style={{ background: "var(--accent-primary)" }}
+                    >
+                      Add project
+                    </div>
+                  </div>
+
+                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                    {[
+                      {
+                        name: "portfolio-site",
+                        branch: "main",
+                        status: "Active",
+                      },
+                      {
+                        name: "dashboard-ui",
+                        branch: "main",
+                        status: "Active",
+                      },
+                    ].map((project) => (
+                      <div
+                        key={project.name}
+                        className="rounded-lg border border-[var(--border-primary)] p-4"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-sm font-medium">{project.name}</p>
+                          <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
+                            {project.status}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-xs text-[var(--text-muted)]">
+                          {project.branch}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Workflow */}
+      <section id="workflow" className="scroll-mt-20 py-20">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="max-w-2xl">
+            <p className="text-sm font-medium text-[var(--accent-primary)]">
+              Workflow
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
+              From repository to build in three steps
+            </h2>
+            <p className="mt-3 text-[var(--text-secondary)]">
+              A focused pipeline designed for teams that want deployment without
+              infrastructure overhead.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
+            {workflow.map((item, index) => (
+              <div key={item.title} className="relative">
+                {index < workflow.length - 1 && (
+                  <div className="absolute right-0 top-8 hidden h-px w-full translate-x-1/2 bg-[var(--border-primary)] md:block" />
+                )}
+                <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-6">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--bg-muted)] text-[var(--accent-primary)]">
+                    <item.icon size={20} strokeWidth={1.75} />
+                  </div>
+                  <h3 className="mt-4 text-base font-semibold">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Product / Platform table */}
+      <section
+        id="platform"
+        className="scroll-mt-20 border-y border-[var(--border-primary)] bg-[var(--bg-secondary)] py-20"
+      >
+        <div className="mx-auto max-w-6xl px-6">
+          <div id="product" className="scroll-mt-20 max-w-2xl">
+            <p className="text-sm font-medium text-[var(--accent-primary)]">
+              Platform
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
+              Current capabilities
+            </h2>
+            <p className="mt-3 text-[var(--text-secondary)]">
+              Transparent view of what is live today and what is on the roadmap.
+            </p>
+          </div>
+
+          <div className="mt-10 overflow-hidden rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)]">
+            <div className="grid grid-cols-[1fr_auto] border-b border-[var(--border-primary)] bg-[var(--bg-muted)] px-5 py-3 text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+              <span>Capability</span>
+              <span>Status</span>
+            </div>
+            {platformRows.map((row, i) => (
+              <div
+                key={row.name}
+                className={`grid grid-cols-[1fr_auto] items-center gap-4 px-5 py-3.5 text-sm ${
+                  i !== platformRows.length - 1
+                    ? "border-b border-[var(--border-primary)]"
+                    : ""
+                }`}
+              >
+                <span className="text-[var(--text-primary)]">{row.name}</span>
+                <StatusBadge status={row.status} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="scroll-mt-20 py-20">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:items-start">
+            <div>
+              <p className="text-sm font-medium text-[var(--accent-primary)]">
+                FAQ
               </p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </motion.section>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
+                Common questions
+              </h2>
+              <p className="mt-3 text-[var(--text-secondary)]">
+                Quick answers before you connect your first repository.
+              </p>
+              <Link
+                to="/register"
+                className="mt-8 inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-primary)] hover:underline"
+              >
+                Create free account
+                <ChevronRight size={16} />
+              </Link>
+            </div>
 
-      {/* Divider */}
-      <hr className="mx-auto rounded-full border-gray-500 border my-12" />
+            <div className="divide-y divide-[var(--border-primary)] rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)]">
+              {faqs.map((item) => (
+                <details key={item.q} className="group">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-sm font-medium marker:content-none">
+                    {item.q}
+                    <ChevronRight
+                      size={16}
+                      className="shrink-0 text-[var(--text-muted)] transition group-open:rotate-90"
+                    />
+                  </summary>
+                  <p className="px-5 pb-4 text-sm leading-relaxed text-[var(--text-secondary)]">
+                    {item.a}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section
+        className="border-t border-[var(--border-primary)]"
+        style={{ background: "var(--accent-primary)" }}
+      >
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-6 py-16 text-white md:flex-row md:items-center">
+          <div>
+            <h2 className="text-2xl font-semibold tracking-tight">
+              Ready to deploy?
+            </h2>
+            <p className="mt-2 text-sm text-white/80">
+              Create an account and connect your first repository in minutes.
+            </p>
+          </div>
+          <Link
+            to="/register"
+            className="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-[var(--accent-primary)]"
+          >
+            Get started
+            <ArrowRight size={16} />
+          </Link>
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="border-t border-[var(--border-primary)] bg-[var(--bg-footer)] backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-6 py-12">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
-            <div className="flex items-start gap-4">
-              <div
-                style={{ background: "var(--gradient-primary)" }}
-                className="h-10 w-10 flex items-center justify-center rounded-2xl text-[var(--text-white)] font-bold"
-              >
-                D
+      <footer className="border-t border-[var(--border-primary)] bg-[var(--bg-footer)] py-12">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="flex flex-col justify-between gap-8 md:flex-row">
+            <div>
+              <div className="flex items-center gap-2">
+                <div
+                  className="flex h-7 w-7 items-center justify-center rounded-md text-[10px] font-bold text-white"
+                  style={{ background: "var(--accent-primary)" }}
+                >
+                  D
+                </div>
+                <span className="text-sm font-semibold">Deployify</span>
               </div>
+              <p className="mt-3 max-w-xs text-sm text-[var(--text-secondary)]">
+                Deployment platform for GitHub-based projects.
+              </p>
+            </div>
 
+            <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
               <div>
-                <h3 className="text-lg font-semibold">Deployify</h3>
-                <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                  Modern cloud deployment platform
+                <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+                  Product
                 </p>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-8">
-              <div>
-                <h4 className="text-sm font-semibold mb-3">Product</h4>
-                <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
+                <ul className="mt-3 space-y-2 text-sm text-[var(--text-secondary)]">
                   <li>
-                    <a href="#" className="hover:text-[var(--text-primary)]">
-                      Features
+                    <a
+                      href="#workflow"
+                      className="hover:text-[var(--text-primary)]"
+                    >
+                      Workflow
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="hover:text-[var(--text-primary)]">
-                      Deployments
+                    <a
+                      href="#platform"
+                      className="hover:text-[var(--text-primary)]"
+                    >
+                      Platform
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="hover:text-[var(--text-primary)]">
-                      Pricing
+                    <a href="#faq" className="hover:text-[var(--text-primary)]">
+                      FAQ
                     </a>
                   </li>
                 </ul>
               </div>
-
               <div>
-                <h4 className="text-sm font-semibold mb-3">Resources</h4>
-                <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
+                <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+                  Account
+                </p>
+                <ul className="mt-3 space-y-2 text-sm text-[var(--text-secondary)]">
                   <li>
-                    <a href="#" className="hover:text-[var(--text-primary)]">
-                      Docs
-                    </a>
+                    <Link
+                      to="/login"
+                      className="hover:text-[var(--text-primary)]"
+                    >
+                      Log in
+                    </Link>
                   </li>
                   <li>
-                    <a href="#" className="hover:text-[var(--text-primary)]">
-                      Blog
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-[var(--text-primary)]">
-                      Contact
-                    </a>
+                    <Link
+                      to="/register"
+                      className="hover:text-[var(--text-primary)]"
+                    >
+                      Sign up
+                    </Link>
                   </li>
                 </ul>
               </div>
             </div>
           </div>
 
-          <div className="mt-8 border-t border-[var(--border-primary)] pt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <p className="text-sm text-[var(--text-secondary)]">
-              © {new Date().getFullYear()} Deployify. All rights reserved.
-            </p>
-
-            <div className="flex items-center gap-4">
-              <a
-                href="#"
-                className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-              >
-                GitHub
-              </a>
-              <a
-                href="#"
-                className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-              >
-                Docs
-              </a>
-              <a
-                href="#"
-                className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-              >
-                Pricing
-              </a>
-            </div>
-          </div>
+          <p className="mt-10 text-xs text-[var(--text-muted)]">
+            © {new Date().getFullYear()} Deployify. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>
