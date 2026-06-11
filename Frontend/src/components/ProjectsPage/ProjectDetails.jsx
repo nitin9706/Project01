@@ -1,8 +1,8 @@
 import { ArrowLeft } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import DashboardLayout from "./DashboardLayout";
-import { getDeployment } from "../../Api/dataGet.js";
+import { getDeployment, deleteDeployment } from "../../Api/dataGet.js";
 
 const logLines = [
   { text: "$ git clone <repo-url>", className: "text-[var(--accent-light)]" },
@@ -100,11 +100,8 @@ export function ProjectDetails() {
     try {
       setDeleting(true);
 
-      // TODO: Replace with your API call
-      // await deleteDeployment(id);
-
       console.log("Deleting project:", id);
-
+      await deleteDeployment(id);
       navigate("/dashboard");
     } catch (error) {
       console.error(error);

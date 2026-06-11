@@ -35,6 +35,22 @@ const cloneProject = asyncHandler(async (req, res) => {
 
     console.log(zipPath);
 
+    // creating the database entry when the zip uploaded to the s3
+
+    const deploymentEntry = await Deployment.create({
+      deploymentId: id,
+      projectName: projectName || "",
+      status: "queued",
+      userId: userId,
+      buildLogs: ["Cloning repository... "],
+    });
+
+    const deploymentDoc = await Deployment.findById(deploymentEntry._id);
+
+    if (!deploymentDoc) {
+      throw new ApiError(500, "DB Entry failed");
+    }
+
     // s3 key
     const s3Key = `archives/${id}.zip`;
 
@@ -43,21 +59,6 @@ const cloneProject = asyncHandler(async (req, res) => {
 
     if (!s3Url) {
       throw new ApiError(400, `file not uploaded to s3 ${s3Url} , ${s3Key}`);
-    }
-
-    // creating the database entry when the zip uploaded to the s3
-
-    const deploymentEntry = await Deployment.create({
-      deploymentId: id,
-      projectName: projectName || "",
-      status: "queued",
-      userId: userId,
-    });
-
-    const deploymentDoc = await Deployment.findById(deploymentEntry._id);
-
-    if (!deploymentDoc) {
-      throw new ApiError(500, "DB Entry failed");
     }
 
     //  now we will push the cloneing status to the queue

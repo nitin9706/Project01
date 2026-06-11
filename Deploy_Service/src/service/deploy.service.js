@@ -29,7 +29,7 @@ export const deployProject = async (
     { deploymentId: deploymentId },
     {
       $push: {
-        buildLogs: "Building",
+        buildLogs: "Installing dependencies...  ",
       },
     },
   );
@@ -61,9 +61,15 @@ export const deployProject = async (
 
     // modifiying the db entry from queue to building
 
-    await Deployment.findByIdAndUpdate(deploymentDoc._id, {
-      status: "Building",
-    });
+    await Deployment.findOneAndUpdate(
+      { deploymentId: deploymentId },
+      {
+        status: "Building",
+        $push: {
+          buildLogs: { message: "Running build..." },
+        },
+      },
+    );
 
     console.log(`[${deploymentId}] Building project`);
 
@@ -118,9 +124,14 @@ export const deployProject = async (
 
     console.log(`[${deploymentId}] Deployment successful`);
 
-    await Deployment.findByIdAndUpdate(deploymentDoc._id, {
+    await Deployment.findOneAndUpdate(deploymentId, {
       status: "success",
       url: `${process.env.DEPLOYMENT_BASE_URL}/${deploymentId}/`,
+      $push: {
+        buildLogs: {
+          message: "Build Complete",
+        },
+      },
     });
 
     return {

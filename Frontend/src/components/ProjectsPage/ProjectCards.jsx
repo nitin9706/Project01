@@ -43,7 +43,7 @@ export default function ProjectCard({ project }) {
 
       <div className="flex items-center justify-between border-t border-[var(--border-primary)] pt-4 text-sm">
         <span className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-1 text-[var(--text-secondary)]">
-          {project.BuildConfig?.framework || project.framework || "Unknown"}
+          {project.BuildConfig?.framework || project.framework || "React Js"}
         </span>
         <span className="flex items-center gap-1 text-[var(--text-muted)]">
           {new Date(project.updatedAt).toLocaleDateString()}
