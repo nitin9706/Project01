@@ -7,6 +7,10 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
+
+ARG VITE_BACKEND_API=http://localhost:8000/api/v1
+ENV VITE_BACKEND_API=$VITE_BACKEND_API
+
 RUN npm run build
 
 # Production Stage

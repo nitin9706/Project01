@@ -27,6 +27,8 @@ services:
   frontend:
     build:
       context: ./Frontend
+    env_file:
+      - ./Frontend/.env
     container_name: frontend
     restart: unless-stopped
     ports:

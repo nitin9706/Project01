@@ -11,9 +11,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const response = await refreshAccessToken();
 
-        const data = response?.data?.data;
-
-        setUser(data?.user || null);
+        setUser(response?.data?.user || null);
       } catch (error) {
         console.error("Authentication failed:", error);
         setUser(null);

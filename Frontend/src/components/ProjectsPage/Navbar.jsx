@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, LayoutDashboard, PlusCircle } from "lucide-react";
 import ThemeToggle from "../common/ThemeToggle";
 import { logoutUser } from "../../Api/dataGet.js";
+import { useAuth } from "../../context/useAuthHook.jsx";
 import ProfileAvatar from "../common/ProfileAvatar";
 
 const navItems = [
@@ -16,28 +17,22 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [avatarOpen, setAvatarOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const { user, logout } = useAuth();
 
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
       await logoutUser();
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      logout();
       navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
+      logout();
+      navigate("/login");
     } finally {
       setLoggingOut(false);
     }
   };
-
-  const storedUser = (() => {
-    try {
-      return JSON.parse(localStorage.getItem("user"));
-    } catch (e) {
-      return null;
-    }
-  })();
 
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--border-primary)] bg-[var(--bg-navbar)] px-4 py-3 backdrop-blur-md lg:px-6">
@@ -71,7 +66,7 @@ export default function Navbar() {
               className="inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] px-2 py-1 text-sm text-[var(--text-secondary)]"
             >
               <ProfileAvatar
-                name={storedUser?.name || storedUser?.email}
+                name={user?.name || user?.email}
                 size={32}
               />
             </button>
