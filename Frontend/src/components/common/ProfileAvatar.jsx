@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function ProfileAvatar({
   name,
   size = 32,
@@ -29,7 +27,7 @@ export default function ProfileAvatar({
   return (
     <div
       className={
-        "flex items-center justify-center rounded-full bg-[var(--accent-primary)] text-white " +
+        "flex items-center justify-center rounded-full bg-(--accent-primary) text-white " +
         className
       }
       style={{ width: size, height: size }}
