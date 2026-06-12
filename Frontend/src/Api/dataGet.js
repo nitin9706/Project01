@@ -22,6 +22,11 @@ export const refreshAccessToken = async () => {
   return await axiosClient.post("/user/refreshAccessToken");
 };
 
+// get Current User
+export const getCurrentUser = async () => {
+  return await axiosClient.get("/user/getCurrentUser");
+};
+
 // delete User
 export const deleteUser = async () => {
   return await axiosClient.delete("/user/delete");

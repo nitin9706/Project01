@@ -6,6 +6,7 @@ import {
   logoutUser,
   refreshAccessToken,
   registerUser,
+  getCurrentUser,
 } from "./user.controller.js";
 
 import { verifyJWT } from "../../Middleware/auth.middleware.js";
@@ -19,6 +20,8 @@ router.route("/login").post(loginUser);
 router.route("/logout").post(verifyJWT, logoutUser);
 
 router.route("/refreshAccessToken").post(refreshAccessToken);
+
+router.route("/getCurrentUser").get(getCurrentUser);
 
 router.route("/delete").delete(verifyJWT, deleteUser);
 

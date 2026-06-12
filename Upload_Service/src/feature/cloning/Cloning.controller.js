@@ -114,15 +114,11 @@ const getAllProjects = asyncHandler(async (req, res) => {
 const getAnyProject = asyncHandler(async (req, res) => {
   const projectId = req.params.id;
 
-  const specificDeployment = await Deployment.findOne({
-    _id: projectId,
-    userId: req.user._id,
-  });
+  const specificDeployment = await Deployment.findById(projectId);
 
   if (!specificDeployment) {
     throw new ApiError(404, "Invalid Deployment");
   }
-
   return res
     .status(200)
     .json(

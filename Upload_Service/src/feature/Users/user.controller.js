@@ -173,4 +173,19 @@ const deleteUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User Deleted Successfully"));
 });
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken, deleteUser };
+const getCurrentUser = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+
+  const user = await User.findById(userId);
+
+  return res.status(200).json(new ApiResponse(200, { user }, "Here is You"));
+});
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  deleteUser,
+  getCurrentUser,
+};

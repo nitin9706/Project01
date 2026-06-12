@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 
 import ThemeToggle from "../common/ThemeToggle";
 import ProfileAvatar from "../common/ProfileAvatar";
-import { useAuth } from "../../context/useAuth";
+import { useAuth } from "../../context/useAuthHook";
 
 const navLinks = [
   { label: "Product", href: "#product" },

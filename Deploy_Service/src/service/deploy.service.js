@@ -66,7 +66,7 @@ export const deployProject = async (
       {
         status: "Building",
         $push: {
-          buildLogs: { message: "Running build..." },
+          buildLogs: "Running build...",
         },
       },
     );
@@ -124,15 +124,16 @@ export const deployProject = async (
 
     console.log(`[${deploymentId}] Deployment successful`);
 
-    await Deployment.findOneAndUpdate(deploymentId, {
-      status: "success",
-      url: `${process.env.DEPLOYMENT_BASE_URL}/${deploymentId}/`,
-      $push: {
-        buildLogs: {
-          message: "Build Complete",
+    await Deployment.findOneAndUpdate(
+      { deploymentId: deploymentId },
+      {
+        status: "success",
+        url: `${process.env.DEPLOYMENT_BASE_URL}/${deploymentId}/`,
+        $push: {
+          buildLogs: "Build Complete",
         },
       },
-    });
+    );
 
     return {
       success: true,
@@ -146,7 +147,7 @@ export const deployProject = async (
 
     await Deployment.findOneAndUpdate(
       { deploymentId: deploymentId },
-      { error: error },
+      { error: error?.message || String(error) },
     );
 
     // Cleanup temp deployment
