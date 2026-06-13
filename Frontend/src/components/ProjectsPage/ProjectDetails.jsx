@@ -1,6 +1,6 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import DashboardLayout from "./DashboardLayout";
 import { getDeployment, deleteDeployment } from "../../Api/dataGet.js";
 
@@ -22,19 +22,29 @@ const logLines = [
 
 export function ProjectDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    const fetchProject = async () => {
+  const fetchProject = useCallback(
+    async (showRefreshLoader = false) => {
       try {
-        setLoading(true);
+        setError("");
+
+        if (showRefreshLoader) {
+          setRefreshing(true);
+        } else {
+          setLoading(true);
+        }
+
         const response = await getDeployment(id);
+
         if (response.success) {
           setProject(response.data);
         } else {
@@ -44,11 +54,43 @@ export function ProjectDetails() {
         setError(err.message || "Couldn't load this project");
       } finally {
         setLoading(false);
+        setRefreshing(false);
       }
-    };
+    },
+    [id],
+  );
 
-    if (id) fetchProject();
-  }, [id]);
+  useEffect(() => {
+    if (id) {
+      fetchProject();
+    }
+  }, [id, fetchProject]);
+
+  const handleRefresh = () => {
+    fetchProject(true);
+  };
+
+  const handleDelete = () => {
+    setShowDeleteConfirmation(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      setDeleting(true);
+
+      await deleteDeployment(id);
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirmation(false);
+  };
 
   if (loading) {
     return (
@@ -68,6 +110,7 @@ export function ProjectDetails() {
           <ArrowLeft size={16} />
           Back
         </Link>
+
         <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-5 text-sm text-red-600">
           {error || "Project not found"}
         </div>
@@ -75,9 +118,9 @@ export function ProjectDetails() {
     );
   }
 
-  // Helper renderers for deployment and project shapes
   const title = project.projectName || project.name || "Untitled";
   const repoUrl = project.RepoInfo?.repoUrl || project.archiveUrl || null;
+
   const details = [
     ["Deployment ID", project.deploymentId || project.deployment_id || "—"],
     ["Status", project.status || "unknown"],
@@ -91,28 +134,6 @@ export function ProjectDetails() {
           : "—",
     ],
   ];
-
-  const handleDelete = () => {
-    setShowDeleteConfirmation(true);
-  };
-
-  const confirmDelete = async () => {
-    try {
-      setDeleting(true);
-
-      console.log("Deleting project:", id);
-      await deleteDeployment(id);
-      navigate("/dashboard");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setDeleting(false);
-    }
-  };
-
-  const cancelDelete = () => {
-    setShowDeleteConfirmation(false);
-  };
 
   return (
     <DashboardLayout>
@@ -128,12 +149,26 @@ export function ProjectDetails() {
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
 
-          <button
-            onClick={handleDelete}
-            className="rounded-md border border-red-500 px-3 py-1 text-sm text-red-500 transition-colors hover:bg-red-500 hover:text-white"
-          >
-            Delete
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="flex items-center gap-2 rounded-md border border-[var(--border-primary)] px-3 py-1 text-sm transition-colors hover:bg-[var(--bg-muted)] disabled:opacity-50"
+            >
+              <RefreshCw
+                size={16}
+                className={refreshing ? "animate-spin" : ""}
+              />
+              {refreshing ? "Refreshing..." : "Refresh"}
+            </button>
+
+            <button
+              onClick={handleDelete}
+              className="rounded-md border border-red-500 px-3 py-1 text-sm text-red-500 transition-colors hover:bg-red-500 hover:text-white"
+            >
+              Delete
+            </button>
+          </div>
         </div>
 
         {repoUrl && (
@@ -151,6 +186,7 @@ export function ProjectDetails() {
               build output
             </span>
           </div>
+
           <div className="max-h-80 space-y-2 overflow-auto bg-[var(--bg-terminal)] p-5 text-[13px]">
             {Array.isArray(project.buildLogs) && project.buildLogs.length > 0
               ? project.buildLogs.map((line, idx) => (
@@ -163,6 +199,7 @@ export function ProjectDetails() {
                     {line.text}
                   </p>
                 ))}
+
             <p className="pt-2 text-xs text-[var(--text-muted)]">
               Real-time logs aren't hooked up yet.
             </p>
@@ -172,6 +209,7 @@ export function ProjectDetails() {
         <div className="space-y-4">
           <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-5">
             <h2 className="text-sm font-semibold">Details</h2>
+
             <dl className="mt-4 space-y-3 text-sm">
               {details.map(([label, value]) => (
                 <div key={label}>
@@ -184,6 +222,7 @@ export function ProjectDetails() {
 
           <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-muted)] p-5 text-sm">
             <p className="font-medium text-[var(--text-primary)]">Live URL</p>
+
             <p className="mt-2 text-[var(--text-secondary)]">
               {project.url ? (
                 <a
@@ -201,6 +240,7 @@ export function ProjectDetails() {
           </div>
         </div>
       </div>
+
       {showDeleteConfirmation && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
           <div className="w-full max-w-lg rounded-xl border border-red-500/20 bg-[var(--bg-card)] p-8 shadow-2xl">
