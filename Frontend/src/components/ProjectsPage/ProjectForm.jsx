@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createDeployment } from "../../Api/dataGet.js";
+import { useCreateDeployment } from "../../Api/queryHooks.js";
 
 export default function ProjectForm() {
   const [repoUrl, setRepoUrl] = useState("");
@@ -11,30 +11,26 @@ export default function ProjectForm() {
   const inputClass =
     "w-full rounded-[10px] border border-[var(--border-primary)] bg-[var(--bg-input)] px-4 py-3 text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--border-accent)]";
 
+  const createMutation = useCreateDeployment();
+
   const deploy = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const response = await createDeployment({
+      const payload = {
         name: repoUrl.split("/").pop() || "project",
         repoUrl: repoUrl,
         framework: "React + Vite",
         status: "active",
-      });
+      };
 
-      if (response.success) {
-        // If API returned created deployment doc, navigate to its details page
-        const newId = response.data?.deploymentDoc?._id || response.data?.id;
-        if (newId) {
-          navigate(`/projects/${newId}`);
-        } else {
-          navigate("/dashboard");
-        }
-      } else {
-        setError(response.message || "Couldn't add that repo");
-      }
+      const response = await createMutation.mutateAsync(payload);
+
+      const newId = response?.data?.deploymentDoc?._id || response?.data?.id;
+      if (newId) navigate(`/projects/${newId}`);
+      else navigate("/dashboard");
     } catch (err) {
       setError(err.message || "Something broke. Check the URL and try again.");
     } finally {

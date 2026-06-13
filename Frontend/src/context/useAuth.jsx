@@ -1,41 +1,32 @@
-import { useEffect, useMemo, useState } from "react";
-import { refreshAccessToken } from "../Api/dataGet.js";
+import { useMemo, useState, useEffect } from "react";
 import { AuthContext } from "./authContext.jsx";
+import { useCurrentUser } from "../Api/queryHooks.js";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading } = useCurrentUser();
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const response = await refreshAccessToken();
+    if (data) {
+      // server may return { success, data: { user } } or { user }
+      const normalized = data?.data?.user ?? data?.user ?? data;
+      setUser(normalized || null);
+    } else if (!isLoading) {
+      setUser(null);
+    }
+  }, [data, isLoading]);
 
-        setUser(response?.data?.user || null);
-      } catch (error) {
-        console.error("Authentication failed:", error);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initializeAuth();
-  }, []);
-
-  const logout = () => {
-    setUser(null);
-  };
+  const logout = () => setUser(null);
 
   const value = useMemo(
     () => ({
       user,
       setUser,
-      loading,
+      loading: isLoading,
       logout,
       isAuthenticated: !!user,
     }),
-    [user, loading],
+    [user, isLoading],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

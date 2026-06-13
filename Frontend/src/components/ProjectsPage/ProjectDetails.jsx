@@ -1,8 +1,8 @@
 import { ArrowLeft, RefreshCw } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import DashboardLayout from "./DashboardLayout";
-import { getDeployment, deleteDeployment } from "../../Api/dataGet.js";
+import { useDeployment, useDeleteDeployment } from "../../Api/queryHooks.js";
 
 const logLines = [
   { text: "$ git clone <repo-url>", className: "text-[var(--accent-light)]" },
@@ -24,62 +24,29 @@ export function ProjectDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [project, setProject] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState("");
-
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  const fetchProject = useCallback(
-    async (showRefreshLoader = false) => {
-      try {
-        setError("");
+  const { data: projectData, isLoading, refetch } = useDeployment(id);
+  const deleteMutation = useDeleteDeployment();
 
-        if (showRefreshLoader) {
-          setRefreshing(true);
-        } else {
-          setLoading(true);
-        }
+  const project = Array.isArray(projectData?.data)
+    ? projectData.data[0]
+    : (projectData?.data ?? projectData);
 
-        const response = await getDeployment(id);
-
-        if (response.success) {
-          setProject(response.data);
-        } else {
-          setError(response.message || "Couldn't load this project");
-        }
-      } catch (err) {
-        setError(err.message || "Couldn't load this project");
-      } finally {
-        setLoading(false);
-        setRefreshing(false);
-      }
-    },
-    [id],
-  );
-
-  useEffect(() => {
-    if (id) {
-      fetchProject();
-    }
-  }, [id, fetchProject]);
-
-  const handleRefresh = () => {
-    fetchProject(true);
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
   };
 
-  const handleDelete = () => {
-    setShowDeleteConfirmation(true);
-  };
+  const handleDelete = () => setShowDeleteConfirmation(true);
 
   const confirmDelete = async () => {
     try {
       setDeleting(true);
-
-      await deleteDeployment(id);
-
+      await deleteMutation.mutateAsync(id);
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
@@ -88,19 +55,16 @@ export function ProjectDetails() {
     }
   };
 
-  const cancelDelete = () => {
-    setShowDeleteConfirmation(false);
-  };
+  const cancelDelete = () => setShowDeleteConfirmation(false);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <DashboardLayout>
         <p className="text-[var(--text-secondary)]">Loading...</p>
       </DashboardLayout>
     );
   }
-
-  if (error || !project) {
+  if (!project) {
     return (
       <DashboardLayout>
         <Link
@@ -110,9 +74,8 @@ export function ProjectDetails() {
           <ArrowLeft size={16} />
           Back
         </Link>
-
         <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-5 text-sm text-red-600">
-          {error || "Project not found"}
+          Project not found
         </div>
       </DashboardLayout>
     );

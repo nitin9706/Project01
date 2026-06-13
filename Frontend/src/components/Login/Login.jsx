@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginUser } from "../../Api/dataGet.js";
+import { useLogin } from "../../Api/queryHooks.js";
 import { useAuth } from "../../context/useAuthHook.jsx";
 
 export default function Login() {
@@ -10,6 +10,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { setUser } = useAuth();
+  const loginMutation = useLogin();
 
   const inputClass =
     "w-full rounded-lg border border-[var(--border-primary)] bg-[var(--bg-input)] px-4 py-3 text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--border-accent)]";
@@ -20,16 +21,13 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await loginUser({ email, password });
-
-      if (response.success) {
-        const { user } = response.data;
-
+      const response = await loginMutation.mutateAsync({ email, password });
+      const user = response?.data?.user || response?.user || response;
+      if (user) {
         setUser(user);
-
         navigate("/dashboard");
       } else {
-        setError(response.message || "Login failed");
+        setError(response?.message || "Login failed");
       }
     } catch (err) {
       setError(err.message || "Something went wrong. Try again?");

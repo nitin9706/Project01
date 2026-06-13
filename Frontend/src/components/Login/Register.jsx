@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser } from "../../Api/dataGet.js";
+import { useRegister } from "../../Api/queryHooks.js";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -13,17 +13,23 @@ export default function Register() {
   const inputClass =
     "w-full rounded-lg border border-[var(--border-primary)] bg-[var(--bg-input)] px-4 py-3 text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--border-accent)]";
 
+  const registerMutation = useRegister();
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const response = await registerUser({ name, email, password });
-      if (response.success) {
+      const response = await registerMutation.mutateAsync({
+        name,
+        email,
+        password,
+      });
+      if (response?.success || response) {
         navigate("/login");
       } else {
-        setError(response.message || "Couldn't create account");
+        setError(response?.message || "Couldn't create account");
       }
     } catch (err) {
       setError(err.message || "Something went wrong. Try again?");
@@ -35,7 +41,10 @@ export default function Register() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[var(--bg-primary)] px-4">
       <div className="w-full max-w-sm">
-        <Link to="/" className="mb-8 inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
+        <Link
+          to="/"
+          className="mb-8 inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+        >
           ← Back home
         </Link>
 
@@ -87,7 +96,10 @@ export default function Register() {
 
           <p className="mt-5 text-center text-sm text-[var(--text-secondary)]">
             Already signed up?{" "}
-            <Link to="/login" className="font-medium text-[var(--accent-primary)] hover:underline">
+            <Link
+              to="/login"
+              className="font-medium text-[var(--accent-primary)] hover:underline"
+            >
               Log in
             </Link>
           </p>

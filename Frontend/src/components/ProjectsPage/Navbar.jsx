@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, LayoutDashboard, PlusCircle } from "lucide-react";
 import ThemeToggle from "../common/ThemeToggle";
-import { logoutUser } from "../../Api/dataGet.js";
+import { useLogout } from "../../Api/queryHooks.js";
 import { useAuth } from "../../context/useAuthHook.jsx";
 import ProfileAvatar from "../common/ProfileAvatar";
 
@@ -18,11 +18,12 @@ export default function Navbar() {
   const [avatarOpen, setAvatarOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const { user, logout } = useAuth();
+  const logoutMutation = useLogout();
 
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
-      await logoutUser();
+      await logoutMutation.mutateAsync();
       logout();
       navigate("/login");
     } catch (error) {
@@ -65,10 +66,7 @@ export default function Navbar() {
               onClick={() => setAvatarOpen((p) => !p)}
               className="inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] px-2 py-1 text-sm text-[var(--text-secondary)]"
             >
-              <ProfileAvatar
-                name={user?.name || user?.email}
-                size={32}
-              />
+              <ProfileAvatar name={user?.name || user?.email} size={32} />
             </button>
 
             {avatarOpen && (

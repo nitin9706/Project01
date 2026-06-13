@@ -1,7 +1,7 @@
 import { ExternalLink, GitBranch } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { getAllDeployment } from "../../Api/dataGet.js";
+import { useAllDeployments } from "../../Api/queryHooks.js";
 
 const statusStyles = {
   queued: "border-gray-500/30 bg-gray-500/10 text-gray-400",
@@ -58,32 +58,10 @@ export default function ProjectCard({ project }) {
 }
 
 export function ProjectCardGrid() {
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { data: projectsData, isLoading } = useAllDeployments();
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        setLoading(true);
-        const response = await getAllDeployment();
-        if (response.success && Array.isArray(response.data)) {
-          setProjects(response.data);
-        } else {
-          setProjects([]);
-        }
-      } catch (err) {
-        setError(err.message || "Failed to fetch projects");
-        setProjects([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjects();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         {[...Array(3)].map((_, i) => (
@@ -99,13 +77,19 @@ export function ProjectCardGrid() {
     );
   }
 
-  if (error) {
+  // handle error from query
+  if (error || (!projectsData?.success && !Array.isArray(projectsData))) {
     return (
       <div className="rounded-[28px] border border-red-500/50 bg-red-500/10 p-6">
-        <p className="text-red-500">{error}</p>
+        <p className="text-red-500">{error || "Failed to fetch projects"}</p>
       </div>
     );
   }
+  const projects = Array.isArray(projectsData?.data)
+    ? projectsData.data
+    : Array.isArray(projectsData)
+      ? projectsData
+      : [];
 
   if (projects.length === 0) {
     return (

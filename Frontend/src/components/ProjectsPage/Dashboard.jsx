@@ -1,39 +1,31 @@
 import { FolderKanban, Layers, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DashboardLayout from "./DashboardLayout";
 import { ProjectCardGrid } from "./ProjectCards";
-import { getAllDeployment } from "../../Api/dataGet.js";
+import { useAllDeployments } from "../../Api/queryHooks.js";
 
 export default function Dashboard() {
-  const [totalProjects, setTotalProjects] = useState(0);
-  const [activeCount, setActiveCount] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+  const { data: projectsData = [], refetch } = useAllDeployments();
 
-  const fetchStats = async () => {
-    try {
-      const response = await getAllDeployment();
+  const totalProjects = Array.isArray(projectsData?.data)
+    ? projectsData.data.length
+    : Array.isArray(projectsData)
+      ? projectsData.length
+      : 0;
 
-      if (response.success && Array.isArray(response.data)) {
-        const projects = response.data;
-
-        setTotalProjects(projects.length);
-        setActiveCount(projects.filter((p) => p.status === "success").length);
-      }
-    } catch (error) {
-      console.error("Failed to fetch stats:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchStats();
-  }, []);
+  const activeCount = (
+    Array.isArray(projectsData?.data)
+      ? projectsData.data
+      : Array.isArray(projectsData)
+        ? projectsData
+        : []
+  ).filter((p) => p.status === "success").length;
 
   const handleRefresh = async () => {
     setRefreshing(true);
-
-    await fetchStats();
-
+    await refetch();
     setRefreshing(false);
   };
 
